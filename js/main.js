@@ -1,7 +1,8 @@
 app.main = (function(){
 	var $mainElement = $('main'),
 		data,
-		filters = {};
+		filters = {},
+    elementsList;
 
 	function init() {
 		console.log('main init!!');
@@ -14,11 +15,11 @@ app.main = (function(){
 		data = results.data;
 		data = transformData(data);
 		writeElements(data);
-		$('.searchRepos').keyup(function(evt) {
-		 	filterData(evt.target.value);
-		});
-		$(document).on('click', '.project-name', clickProject);
+	    document.querySelector('.searchRepos').addEventListener('keyup', function(evt) {
+	      filterData(evt.target.value);
+	    });
 	}
+
 	function transformData(data) {
 		return data.map(function(repo) {
 			var d = new Date(repo.updated_at);
@@ -58,6 +59,10 @@ app.main = (function(){
 	function writeElements(list) {
 		list = completeWithColors(list);
 		app.util.render('#project-list-template', {projects: list}, $mainElement);
+	    elementsList = document.body.querySelectorAll('.panelProject');
+	    for(var i=0,l=elementsList.length;i<l;i++) {
+	      elementsList[i].addEventListener('click', clickProject);
+	    }
 	}
 
 	function completeWithColors(list) {
