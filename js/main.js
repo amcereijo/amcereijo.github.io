@@ -72,50 +72,69 @@ app.main = (function(){
 		return list;
 	}
 
-  function filterData(text) {
-    console.log('flter by name: ' + text);
-    if(text) {
-      addFilter('name', function(value) {
-        var fullName = value.full_name.toLowerCase();
-          text = text.toLowerCase();
-        return (fullName.indexOf(text) !== -1);
-      });
-    } else {
-      removeFilter('name');
-    }
-    filter();
-  }
+	function filterData(text) {
+		console.log('flter by name: ' + text);
+		if(text) {
+			addFilter('name', function(value) {
+				var fullName = value.full_name.toLowerCase();
+				text = text.toLowerCase();
+				return (fullName.indexOf(text) !== -1);
+			});
+		} else {
+			removeFilter('name');
+		}
+		filter();
+	}
 
-  function filterLanguage(evt, language) {
-    console.log('flter by language: ' + language);
-    if(language) {
-      addFilter('language', function(value) {
-        var elementLanguage = (value.language?value.language:'Other').toLowerCase();
-          language = language.toLowerCase();
-        return (elementLanguage === language);
-      });
-    } else {
-      removeFilter('language');
-    }
-    filter();
-  }
+	function filterLanguage(evt, language) {
+		console.log('flter by language: ' + language);
+		if(language) {
+			addFilter('language', function(value) {
+				var elementLanguage = (value.language?value.language:'Other').toLowerCase();
+				language = language.toLowerCase();
+				return (elementLanguage === language);
+			});
+		} else {
+			removeFilter('language');
+		}
+		filter();
+	}
 
-  function addFilter(name, filterFunction) {
-    filters[name] = filterFunction;
-  }
+	function addFilter(name, filterFunction) {
+		filters[name] = filterFunction;
+	}
 
-  function removeFilter(name) {
-    delete filters[name];
-  }
+	function removeFilter(name) {
+		delete filters[name];
+	}
 
-  function filter() {
-    var filterData = data;
-    for(var key in filters) {
-      filterData = filterData.filter(filters[key]);
-    }
-    $mainElement.empty();
-    writeElements(filterData);
-  }
+	function filter() {
+		var actualElement,
+			hidden,
+			i,
+			dataLength = data.length;
+		for(i=0;i<dataLength;i++) {
+			actualElement = data[i];
+			hidden = false;
+			for(var key in filters) {
+				if(!hidden && !filters[key](actualElement)) {
+					hidden = true;
+				}
+			}
+			classToElement(elementsList[i], 'hide', hidden);
+		}
+	}
+
+  	function classToElement(element, className, add) {
+	    var classes = element.getAttribute('class').split(" "),
+	    	index = classes.indexOf(className);
+		if(add && index<0) {
+			classes.push(className);
+		} else if(!add && index>=0) {
+			classes.splice(index, 1);
+		}
+		element.setAttribute('class', classes.join(' '));
+  	}
 
   return {
     init: init
