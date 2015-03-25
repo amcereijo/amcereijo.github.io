@@ -23,7 +23,7 @@ app.github = (function() {
     return 'https://api.github.com/users/' + getUsername();
   },
   doCall = function(url, eventName, mockProp) {
-    if(app.mock && app.mock[mockProp]) {
+    if(app.mock && app.mock.useMock && app.mock[mockProp]) {
       $.publish(eventName, {data: app.mock[mockProp]});  
     } else {
       $.ajax({
