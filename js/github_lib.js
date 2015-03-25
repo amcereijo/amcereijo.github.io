@@ -1,43 +1,47 @@
 app.github = (function() {
-	var getUserName = function() {
+  var username;
+	var getUsername = function() {
 		//http://username.github.io/
-		var host = window.location.host || 'localhost',
-			username;
-		host = host.indexOf('localhost')!=-1? 'amcereijo.github.io':host;
-		userName = host.replace(/.github.io/, '');
-		return userName;
+		if(!username) {
+      if(app.util.isLocal()) {
+        username = app.mock.username?app.mock.username:'amcereijo';
+      } else {
+        username = app.util.getHost().replace(/.github.io/, '');
+      }
+    }
+		return username;
 	},
 	getReposUrl =  function() {
-		return 'https://api.github.com/users/' + getUserName() +
+		return 'https://api.github.com/users/' + getUsername() +
 			'/repos';
 	},
 	getReadMeUrl =  function(repoName) {
-		return 'https://api.github.com/repos/' + getUserName() + 
+		return 'https://api.github.com/repos/' + getUsername() + 
 			'/' + repoName + '/contents/README.md?ref=master';
 	},
   getUserUrl = function() {
-    return 'https://api.github.com/users/' + getUserName();
+    return 'https://api.github.com/users/' + getUsername();
   },
-	doCall = function(url, callback) {
-		$.ajax({
-			url: url,
-			contentType: 'application/json'
-		}).done(callback);
-	},
+  doCall = function(url, eventName, mockProp) {
+    if(app.mock && app.mock[mockProp]) {
+      $.publish(eventName, {data: app.mock[mockProp]});  
+    } else {
+      $.ajax({
+        url: url,
+        contentType: 'application/json'
+      }).done(function(data) {
+        $.publish(eventName, {data: data});
+      });
+    }
+  },
 	getRepos = function() {
-		doCall(getReposUrl(), function(data) {
-			$.publish('github/repo/data', {data:data});
-		});
+    doCall(getReposUrl(), 'github/repo/data', 'getRepos');
 	},
 	getReadme = function(repoName) {
-		doCall(getReadMeUrl(repoName), function(data) {
-			$.publish('github/readme/data', {data:data});
-		});
+		doCall(getReadMeUrl(repoName), 'github/readme/data', 'getReadme');
 	},
   getUser = function() {
-    doCall(getUserUrl(), function(data) {
-      $.publish('github/user', {data: data});
-    });
+    doCall(getUserUrl(), 'github/user', 'getUser');
   };
 
 	return {
