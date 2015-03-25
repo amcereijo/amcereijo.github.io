@@ -16,7 +16,8 @@ require.config({
 var app = {};
 app.util = (function(){
 	var colors = [],
-		languageColors = {};
+		languageColors = {},
+		host = window.location.host || 'localhost';
 
 	function randomColor(language) {
 		var letters = 'ABCDE'.split(''),
@@ -45,9 +46,18 @@ app.util = (function(){
 		$(targetElement).html(html);
 	}
 
+	function isLocal() {
+		return (host.indexOf('github.io') === -1);
+	}
+
+	function getHost() {
+		return host;
+	}
 	return {
 		randomColor: randomColor,
-		render: render
+		render: render,
+		isLocal: isLocal,
+		getHost: getHost
 	}
 })();
 
@@ -68,7 +78,13 @@ app.util = (function(){
 		getDependecies = function($, handlebars) {
 			createPubSub($);
 			window.Handlebars = handlebars;
-			require(['markdown', 'github_lib','main','nav', 'head'], function() {
+
+			var dependecies = ['markdown', 'github_lib','main','nav', 'head'];
+			if(app.util.isLocal()) {
+				console.log('Using mock!!');
+				dependecies.splice(0, 0, 'mock');
+			}
+			require(dependecies, function() {
 				console.log('ready!!');
 				app.github.getRepos();
 				app.github.getUser();
