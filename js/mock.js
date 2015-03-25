@@ -1,4 +1,5 @@
 app.mock = {
+	useMock: true,
 	username: 'amcereijo',
 	getRepos: [
 	  {
