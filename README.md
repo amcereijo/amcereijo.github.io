@@ -9,4 +9,10 @@ Each project item has information about its technology, its last commit date and
 
 You can fork this repo, rename with name *"yourgithubusername".github.io* and you could see your own repo list page under [http://yourgithubusername.github.io](http://<yourgithubusername>.github.io) 
 
+In "js/mock.js" you can configure mock properties:
+* useMock: true|false -> indicate if you want to use mock in local, "true" by default
+* username: 'amcereijo' -> github username to use in local for github api calls
+* getRepos: response json for api call 'https://api.github.com/users/{{githubUserName}}/repos'
+* getReadme: resopnse json for api call 'https://api.github.com/repos/{{githubUserName}}/{{reponName}}/contents/README.md?ref=master'
+* getUser: resopnse json for api call 'https://api.github.com/users/{{githubUserName}}'
 
