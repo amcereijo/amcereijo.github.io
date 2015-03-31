@@ -1,0 +1,47 @@
+<link rel="import" href="../../../components/polymer/polymer.html">
+<polymer-element name="ui-head" attributes="dataManager">
+    <template>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <style>
+            .profileImg {
+                position: relative;
+                top:10pt;
+                margin-bottom: 20pt;
+                width: 125pt;
+                height: 125pt;
+            }
+            .profileData {
+                position: absolute;
+                left: 175pt;
+                top:80pt;
+            }
+            .profileName {
+                position: absolute;
+                left: 240pt;
+                top:15pt;
+            }
+        </style>
+            <img class="profileImg img-thumbnail" src="{{dataManager.user.avatar_url}}"/>
+            <h2 class="profileName">{{dataManager.user.name}}</h2>
+            <dl class="dl-horizontal profileData">
+                <dt>Username:</dt>
+                <dd>
+                    <a href="{{dataManager.user.html_url}}">{{dataManager.user.login}}</a>
+                </dd>
+                <dt>Email:</dt>
+                <dd>{{dataManager.user.email}}</dd>
+                <dt>Location:</dt>
+                <dd>{{dataManager.user.location}}</dd>
+
+            </dl>
+    </template>
+    <script>
+        Polymer({
+            dataManager: {},
+            ready: function() {
+                this.dataManager = document.querySelector('#managerGithub').dataManager;
+                this.dataManager.exec('getUser');
+            }
+        });
+    </script>
+</polymer-element>

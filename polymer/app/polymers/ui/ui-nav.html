@@ -1,0 +1,42 @@
+<link rel="import" href="../../../components/polymer/polymer.html">
+<polymer-element name="ui-nav" attributes="dataManager">
+    <template>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <style>
+
+        </style>
+
+            <p class="text-left">
+                <span id="laguages">
+                    <span class="languageBtn btn btn-default disabled" on-click="{{clickFilter}}">All</span>
+                    <template repeat="{{lang in dataManager.languages}}">
+                        <span class="languageBtn btn btn-default" on-click="{{clickFilter}}" style="background-color:{{lang.color}}"
+                              data-language="{{lang.name}}">{{lang.name}}</span>
+                    </template>
+                </span>
+            </p>
+            <p class="text-left"><input type="text" class="form-control searchRepos" placeholder="Search" on-keyup="{{filterName}}"></p>
+
+
+    </template>
+    <script>
+        Polymer({
+            dataManager: {},
+            ready: function() {
+                this.dataManager = document.querySelector('#managerGithub').dataManager;
+            },
+            clickFilter: function(evt, detail, sender){
+                var lang = sender.dataset.language;
+                var allButtons = this.shadowRoot.querySelectorAll('.btn');
+                for(var i= 0,l=allButtons.length;i<l;i++) {
+                    allButtons[i].classList.remove('disabled');
+                }
+                sender.classList.add('disabled');
+                this.dataManager.exec('filter',{name:'language', value:lang});
+            },
+            filterName: function(evt, detail, sender) {
+                this.dataManager.exec('filter',{name:'name', value:sender.value});
+            }
+        });
+    </script>
+</polymer-element>

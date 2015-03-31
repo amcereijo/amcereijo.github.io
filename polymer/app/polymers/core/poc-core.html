@@ -1,0 +1,24 @@
+<link rel="import" href="../../../components/polymer/polymer.html">
+<polymer-element name="poc-core">
+    <template>
+    </template>
+    <script>
+
+        (function(){
+            var dataCore = (function(){
+                var registedDataApis = {
+                            'data-api-github': document.querySelector('data-api-github')
+                    },
+                    callCore =  function(dataApi, method, componentCallBack, params) {
+                        registedDataApis[dataApi][method](componentCallBack, params);
+                    };
+
+                return {
+                    callCore: callCore
+                };
+            })();
+            return Polymer(dataCore);
+        })();
+
+    </script>
+</polymer-element>

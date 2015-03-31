@@ -1,0 +1,25 @@
+{
+  "name": "amcereijo.github.io",
+  "version": "0.1",
+  "homepage": "http://amcereijo.github.io",
+  "authors": [
+      "amcereijo <amcereio@gmail.com>"
+  ],
+  "description": "Polymer version",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "core-icon-button": "Polymer/core-icon-button#^0.5.0",
+    "font-roboto": "Polymer/font-roboto#^0.5.0",
+    "core-header-panel": "Polymer/core-header-panel#^0.5.0",
+    "paper-tabs": "Polymer/paper-tabs#^0.5.0",
+    "core-ajax": "Polymer/core-ajax#^0.5.0"
+  }
+}

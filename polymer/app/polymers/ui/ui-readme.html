@@ -1,0 +1,51 @@
+<link rel="import" href="../../../components/polymer/polymer.html">
+<polymer-element name="ui-readme" attributes="repo dataManager">
+    <template>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        <style>
+            .more-stuff {
+                padding:15pt;
+            }
+            .more-stuff h3 {
+                background-color: '#D8D8D8';
+                font-weight: bold;
+            }
+        </style>
+        <div class="more-stuff"  >
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title" >README.md</h3>
+                </div>
+                <div id="divReadMe" class="panel-body">
+                </div>
+            </div>
+        </div>
+        </template>
+    <script>
+    Polymer({
+        readMeContent: '',
+        repo:{},
+        dataManager: {},
+        ready: function() {
+            //debugger;
+        },
+        observe: {
+            'repo.active': 'repoActiveChanged',
+            'dataManager.readMe': 'repoReadMeChanged'
+            //'repo.readMe': 'repoReadMeChanged'
+        },
+        repoActiveChanged: function(oldVal, newVal) {
+            if(this.repo.active) {
+                this.dataManager.exec('getReadme', this.repo.name);
+            }
+        },
+        repoReadMeChanged: function(olVal, newVal) {
+            if(this.repo.active) {
+                this.readMeContent = this.readMeContent || newVal;
+                this.$.divReadMe.innerHTML = this.readMeContent;
+            }
+        }
+
+    });
+    </script>
+</polymer-element>

@@ -1,0 +1,135 @@
+<link rel="import" href="../../../components/polymer/polymer.html">
+<polymer-element name="manager-github" attributes="dataManager">
+    <template>
+    </template>
+    <script>
+        (function(){
+            var filtersApply = [];
+            var filters = {
+                    name: function(text) {
+                        console.log('flter by name: ' + text);
+                        if(text) {
+                            filtersApply['name'] = function(value) {
+                                var fullName = value.name.toLowerCase();
+                                text = text.toLowerCase();
+                                return (fullName.indexOf(text) !== -1);
+                            };
+                        } else {
+                            delete filtersApply['name'];
+                        }
+                    },
+                    language: function(language) {
+                        console.log('flter by language: ' + language);
+                        if(language) {
+                            filtersApply['language'] = function(value) {
+                                var elementLanguage = (value.language?value.language:'Other').toLowerCase();
+                                language = language.toLowerCase();
+                                return (elementLanguage === language);
+                            };
+                        } else {
+                            delete filtersApply['language'];
+                        }
+                    }
+            };
+
+            var reposApi = {
+                value: [],
+                cachedRepos: [],
+                getRepos: function () {
+                    var core = document.querySelector('#poccore');
+                    core.callCore('data-api-github', 'getRepos', this.receiveRepos);
+                },
+                receiveRepos: function(results) {
+                    var completeWithColors = function (list) {
+                            for(var i=0,l=list.length;i<l;i++) {
+                                list[i].color = app.util.randomColor(list[i].language);
+                            }
+                            return list;
+                        },
+                        getLanguages = function(repos) {
+                            var languageList = [], languages = [], language,
+                                    i, l = (repos)?repos.length:0;
+                            for( i=0;i<l;i++) {
+                                language = repos[i].language || 'other';
+                                if(languageList.indexOf(language) === -1) {
+                                    languageList.push(language);
+                                    languages.push({name: language, color: app.util.randomColor(language)});
+                                }
+                            }
+                            dataManager.languages = languages;
+                        },
+                        formatDates = function(results){
+                            return results.map(function (repo) {
+                                var d = new Date(repo.updated_at);
+                                repo.updated_at = d.toLocaleDateString() + ' at ' + d.toLocaleTimeString();
+                                return repo;
+                            });
+                        };
+                    if(!dataManager.cachedRepos) {
+                        results = completeWithColors(results.data);
+                        results = formatDates(results);
+                        getLanguages(results);
+                        dataManager.cachedRepos = results;
+                    }
+                    dataManager.repos = dataManager.cachedRepos;
+                },
+
+                filter: function(filterParams) {
+                    //{name: filterName, value: filerValue}
+                    var filter = function() {
+                        var actualElement, hidden, i,
+                                dataLength = dataManager.cachedRepos.length;
+                        for(i=0;i<dataLength;i++) {
+                            actualElement = dataManager.cachedRepos[i];
+                            hidden = false;
+                            for(var key in filtersApply) {
+                                if(!hidden && !filtersApply[key](actualElement)) {
+                                    hidden = true;
+                                }
+                            }
+                            actualElement.filtered = hidden;
+                        }
+                        dataManager.repos = dataManager.cachedRepos;
+                    };
+                    filters[filterParams.name](filterParams.value);
+                    filter();
+                }
+            };
+            var readMeApi = {
+                value: '',
+                getReadme: function (repoName) {
+                    var core = document.querySelector('#poccore');
+                    dataManager.activeRepoName = repoName;
+                    core.callCore('data-api-github', 'getReadme', this.receiveReadme, repoName);
+                },
+                receiveReadme: function(result) {
+                    result = result.data;
+                    var markdownText = atob(result.content);
+                    dataManager.readMe = ('<h1>Mock for '+dataManager.activeRepoName+'</h1>') +
+                    markdown.toHTML( markdownText);
+                },
+                activeRepoName: ''
+            };
+            var userApi = {
+                value: {},
+                getUser: function () {
+                    var core = document.querySelector('#poccore');
+                    core.callCore('data-api-github', 'getUser', this.receiveUser);
+                },
+                receiveUser: function(result) {
+                    dataManager.user = result.data;
+                }
+            };
+
+            var dataManager = new app.API({
+                repos: reposApi,
+                readMe: readMeApi,
+                languages: [],
+                user: userApi
+            });
+            return Polymer({
+                dataManager: dataManager
+            });
+        })();
+    </script>
+</polymer-element>
