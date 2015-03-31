@@ -105,8 +105,9 @@
                 receiveReadme: function(result) {
                     result = result.data;
                     var markdownText = atob(result.content);
-                    dataManager.readMe = ('<h1>Mock for '+dataManager.activeRepoName+'</h1>') +
-                    markdown.toHTML( markdownText);
+                    //just for this special case
+                    var addDifferntData = (app.mock && app.mock.useMock)?('<h1>Mock for '+dataManager.activeRepoName+'</h1>'):'';
+                    dataManager.readMe =  addDifferntData + markdown.toHTML( markdownText);
                 },
                 activeRepoName: ''
             };

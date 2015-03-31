@@ -1,12 +1,20 @@
 <link rel="import" href="../../../components/polymer/polymer.html">
+<link rel="import" href="../../../components/core-ajax/core-ajax.html">
 <polymer-element name="data-api-github">
     <template>
+    <core-ajax id="coreAjax"
+        auto = "false"
+        url=""
+        params=''
+        handleAs="json"
+        on-core-response=""></core-ajax>
     </template>
     <script>
 
         (function(){
             var dataApi = (function(){
                 var username;
+                var coreAjax;
                 var getUsername = function() {
                     if(!username) {
                         if(app.util.isLocal()) {
@@ -33,6 +41,13 @@
                             callBackComponent({data: app.mock[mockProp]})
                         } else {
                             ///TODO ajax call
+                            var coreCopy = coreAjax.cloneNode();
+                            coreCopy.url = url;
+                            coreCopy.addEventListener("core-response", function(evt) {
+                                callBackComponent({data: coreCopy.response})
+                                coreCopy.remove();
+                            });
+                            coreCopy.go();
                         }
                     },
                     getRepos = function(callBackComponent) {
@@ -43,12 +58,17 @@
                     },
                     getUser = function(callBackComponent) {
                         doCall(getUserUrl(), callBackComponent, 'getUser');
+                    },
+                    ready = function() {
+                        debugger;
+                        coreAjax = this.$.coreAjax;
                     };
 
                 return {
                     getRepos: getRepos,
                     getReadme: getReadme,
-                    getUser: getUser
+                    getUser: getUser,
+                    ready: ready
                 };
             })();
 
