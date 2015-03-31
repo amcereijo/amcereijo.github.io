@@ -16,7 +16,7 @@ app.main = (function(){
 		data = transformData(data);
 		writeElements(data);
 	    document.querySelector('.searchRepos').addEventListener('keyup', function(evt) {
-	      filterData(evt.target.value);
+	      filterName(evt.target.value);
 	    });
 	}
 
@@ -72,11 +72,11 @@ app.main = (function(){
 		return list;
 	}
 
-	function filterData(text) {
+	function filterName(text) {
 		console.log('flter by name: ' + text);
 		if(text) {
 			addFilter('name', function(value) {
-				var fullName = value.full_name.toLowerCase();
+				var fullName = value.name.toLowerCase();
 				text = text.toLowerCase();
 				return (fullName.indexOf(text) !== -1);
 			});
