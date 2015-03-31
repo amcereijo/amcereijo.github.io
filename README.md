@@ -16,3 +16,6 @@ In "js/mock.js" you can configure mock properties:
 * getReadme: resopnse json for api call 'https://api.github.com/repos/{{githubUserName}}/{{reponName}}/contents/README.md?ref=master'
 * getUser: resopnse json for api call 'https://api.github.com/users/{{githubUserName}}'
 
+## Polymer version
+All needed files to replicate the same functionality using Polymer are under "polymer" folder.
+Check the output in [http://amcereijo.github.io/polymer/index.html](http://amcereijo.github.io/polymer/index.html)
