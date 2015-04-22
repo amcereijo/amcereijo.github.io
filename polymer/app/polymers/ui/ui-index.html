@@ -1,0 +1,46 @@
+<link rel="import" href="../../../components/polymer/polymer.html">
+<polymer-element name="ui-index" attributes="dataManager">
+    <template>
+        <style type="text/css">
+            .container {
+              width: 80%;
+              margin: 10px auto;
+              }
+              core-header-panel {
+                  height: 100%;
+                  overflow: auto;
+                  -webkit-overflow-scrolling: touch;
+              }
+              core-toolbar {
+                  background: #03a9f4;
+                  color: white;
+              }
+      </style>
+        <div id="coreDiv">
+            <poc-core id="poccore"></poc-core>
+        </div>
+        
+        <data-api-github id="dataapigithub"></data-api-github>
+        <manager-github id="managerGithub" dataManager="{{dataManager}}"></manager-github>
+
+
+        <core-header-panel>
+          <header class="container headerElement">
+              <ui-head dataManager="{{dataManager}}"></ui-head>
+          </header>
+
+            <!--main page-->
+            <div layout vertical center>
+                <nav class="container">
+                    <ui-nav dataManager="{{dataManager}}"></ui-nav>
+                </nav>
+                <main id="main" class="container">
+                    <ui-main dataManager="{{dataManager}}"></ui-main>
+                </main>
+            </div>
+        </core-header-panel>
+    </template>
+    <script>
+        Polymer({});
+    </script>
+</polymer-element>
