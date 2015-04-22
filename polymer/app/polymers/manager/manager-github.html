@@ -4,6 +4,7 @@
     </template>
     <script>
         (function(){
+
             var filtersApply = [];
             var filters = {
                     name: function(text) {
@@ -36,7 +37,7 @@
                 value: [],
                 cachedRepos: [],
                 getRepos: function () {
-                    var core = document.querySelector('#poccore');
+                    var core = document.querySelector('ui-index').$.poccore;
                     core.callCore('data-api-github', 'getRepos', this.receiveRepos);
                 },
                 receiveRepos: function(results) {
@@ -98,7 +99,7 @@
             var readMeApi = {
                 value: '',
                 getReadme: function (repoName) {
-                    var core = document.querySelector('#poccore');
+                    var core = document.querySelector('ui-index').$.poccore;
                     dataManager.activeRepoName = repoName;
                     core.callCore('data-api-github', 'getReadme', this.receiveReadme, repoName);
                 },
@@ -114,7 +115,8 @@
             var userApi = {
                 value: {},
                 getUser: function () {
-                    var core = document.querySelector('#poccore');
+                    debugger;
+                    var core = document.querySelector('ui-index').$.poccore;
                     core.callCore('data-api-github', 'getUser', this.receiveUser);
                 },
                 receiveUser: function(result) {

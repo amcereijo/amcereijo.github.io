@@ -6,11 +6,16 @@
 
         (function(){
             var dataCore = (function(){
-                var registedDataApis = {
-                            'data-api-github': document.querySelector('data-api-github')
+                //TODO create mehtod 'addDataApi' to add new apis here
+                var getRegistedDataApis = function(apiName) {
+                        var apisList = {
+                            'data-api-github': document.querySelector('ui-index').$.dataapigithub
+                        };
+                        return apisList[apiName];
                     },
                     callCore =  function(dataApi, method, componentCallBack, params) {
-                        registedDataApis[dataApi][method](componentCallBack, params);
+                        var api = getRegistedDataApis(dataApi);
+                        api[method](componentCallBack, params);
                     };
 
                 return {
