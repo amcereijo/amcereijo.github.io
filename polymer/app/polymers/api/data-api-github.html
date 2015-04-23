@@ -1,79 +1,89 @@
 <link rel="import" href="../../../components/polymer/polymer.html">
-<link rel="import" href="../../../components/core-ajax/core-ajax.html">
-<polymer-element name="data-api-github">
+<link rel="import" href="../../../components/iron-ajax/iron-ajax.html">
+
+<dom-module id="data-api-github">
     <template>
-    <core-ajax id="coreAjax"
+    <iron-ajax id="coreAjax"
         auto = "false"
         url=""
         params=''
         handleAs="json"
         on-core-response=""></core-ajax>
     </template>
-    <script>
+</dom-module>
 
-        (function(){
-            var dataApi = (function(){
-                var username;
-                var coreAjax;
-                var getUsername = function() {
-                    if(!username) {
-                        if(app.util.isLocal()) {
-                            username = app.mock.username?app.mock.username:'amcereijo';
-                        } else {
-                            username = app.util.getHost().replace(/.github.io/, '');
-                        }
+<script>
+    (function(){
+        var dataApi = (function(){
+            var username;
+            var coreAjax;
+            var getUsername = function() {
+                if(!username) {
+                    if(app.util.isLocal()) {
+                        username = app.mock.username?app.mock.username:'amcereijo';
+                    } else {
+                        username = app.util.getHost().replace(/.github.io/, '');
                     }
-                    return username;
+                }
+                return username;
+            },
+                getReposUrl =  function() {
+                    return 'https://api.github.com/users/' + getUsername() +
+                            '/repos';
                 },
-                    getReposUrl =  function() {
-                        return 'https://api.github.com/users/' + getUsername() +
-                                '/repos';
-                    },
-                    getReadMeUrl =  function(repoName) {
-                        return 'https://api.github.com/repos/' + getUsername() +
-                                '/' + repoName + '/contents/README.md?ref=master';
-                    },
-                    getUserUrl = function() {
-                        return 'https://api.github.com/users/' + getUsername();
-                    },
-                    doCall = function(url, callBackComponent, mockProp) {
-                        if(app.mock && app.mock.useMock && app.mock[mockProp]) {
-                            callBackComponent({data: app.mock[mockProp]})
-                        } else {
-                            ///TODO ajax call
-                            var coreCopy = coreAjax.cloneNode();
-                            coreCopy.url = url;
-                            coreCopy.addEventListener("core-response", function(evt) {
-                                callBackComponent({data: coreCopy.response})
-                                coreCopy.remove();
-                            });
-                            coreCopy.go();
-                        }
-                    },
-                    getRepos = function(callBackComponent) {
-                        doCall(getReposUrl(), callBackComponent, 'getRepos');
-                    },
-                    getReadme = function(callBackComponent, repoName) {
-                        doCall(getReadMeUrl(repoName), callBackComponent, 'getReadme');
-                    },
-                    getUser = function(callBackComponent) {
-                        doCall(getUserUrl(), callBackComponent, 'getUser');
-                    },
-                    ready = function() {
-                        coreAjax = this.$.coreAjax;
-                    };
+                getReadMeUrl =  function(repoName) {
+                    return 'https://api.github.com/repos/' + getUsername() +
+                            '/' + repoName + '/contents/README.md?ref=master';
+                },
+                getUserUrl = function() {
+                    return 'https://api.github.com/users/' + getUsername();
+                },
+                doCall = function(url, callBackComponent, mockProp) {
+                    if(app.mock && app.mock.useMock && app.mock[mockProp]) {
+                        callBackComponent({data: app.mock[mockProp]})
+                    } else {
+                        ///TODO ajax call
+                        var coreCopy = coreAjax.cloneNode();
+                        coreCopy.url = url;
+                        
+                        /*coreCopy.addEventListener("core-response", function(evt) {
+                            callBackComponent({data: coreCopy.response})
+                            coreCopy.remove();
+                        });*/
 
-                return {
-                    getRepos: getRepos,
-                    getReadme: getReadme,
-                    getUser: getUser,
-                    ready: ready
+                        var request = coreCopy.generateRequest();
+                          request.completes.then(function () {
+                            callBackComponent({data: request.response})
+                            coreCopy.remove();
+                          }).catch(function (e) {
+                            console.err(e);
+                          });
+                    }
+                },
+                getRepos = function(callBackComponent) {
+                    doCall(getReposUrl(), callBackComponent, 'getRepos');
+                },
+                getReadme = function(callBackComponent, repoName) {
+                    doCall(getReadMeUrl(repoName), callBackComponent, 'getReadme');
+                },
+                getUser = function(callBackComponent) {
+                    doCall(getUserUrl(), callBackComponent, 'getUser');
+                },
+                ready = function() {
+                    coreAjax = this.$.coreAjax;
                 };
-            })();
 
-            return Polymer(dataApi);
+            return {
+                is: 'data-api-github',
+                getRepos: getRepos,
+                getReadme: getReadme,
+                getUser: getUser,
+                ready: ready
+            };
         })();
 
+        return Polymer(dataApi);
+    })();
 
-    </script>
-</polymer-element>
+
+</script>

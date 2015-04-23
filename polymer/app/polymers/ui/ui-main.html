@@ -1,74 +1,91 @@
 <link rel="import" href="../../../components/polymer/polymer.html">
-<polymer-element name="ui-main" attributes="dataManager">
+
+<dom-module id="ui-main">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <style>
+        .panelProject {
+            background-color: #ffffff;
+            position: relative;
+            width: inherit;
+        }
+        .project-name {
+            position: relative;
+        }
+        .project-name span:last-child {
+            position: absolute;
+            right: 3%;
+            top:14pt;
+        }
+        .project-name span.glyphicon {
+            position: absolute;
+            right: 50%;
+            top:14pt;
+        }
+
+    </style>
     <template>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-        <style>
-            .panelProject {
-                background-color: #ffffff;
-                position: relative;
-                width: inherit;
-            }
-            .project-name {
-                position: relative;
-            }
-            .project-name span:last-child {
-                position: absolute;
-                right: 3%;
-                top:14pt;
-            }
-            .project-name span.glyphicon {
-                position: absolute;
-                right: 50%;
-                top:14pt;
-            }
-
-        </style>
-
-
-        <template repeat="{{project in dataManager.repos}}">
-            <div  hidden?="{{project.filtered}}" class="panel panel-default panelProject">
-                <div class="panel-heading project-name" data-projectname="{{project.name}}" on-click="{{showReadme}}" style="background-color:{{project.color}}">
-                    <h3 class="panel-title" >{{project.name}}</h3>
+        <template is="x-repeat" items="{{repos}}">
+            <div  hidden$="{{item.filtered}}" class="panel panel-default panelProject">
+                <div class="panel-heading project-name" data-projectname="{{item.name}}" on-click="showReadme" style="background-color:{{item.color}}">
+                    <h3 class="panel-title" >{{item.name}}</h3>
 
                     <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
 
 				<span style="font-weight: bold; ">
-                    {{project.language}}
+                    {{item.language}}
 				</span>
                 </div>
                 <div class="panel-body">
-                    <blockquote>{{project.description}}</blockquote>
+                    <blockquote>{{item.description}}</blockquote>
                     <dl>
                         <dt>Repo Url</dt>
-                        <dd><a href="{{project.html_url}}">{{project.html_url}}</a></dd>
+                        <dd><a href="{{item.html_url}}">{{item.html_url}}</a></dd>
                         <dt>Last update</dt>
-                        <dd>{{project.updated_at}}</dd>
+                        <dd>{{item.updated_at}}</dd>
                     </dl>
                 </div>
-               <ui-readme hidden?="{{!project.active}}" repo="{{project}}" dataManager="{{dataManager}}"></ui-readme>
+               <ui-readme hidden$="{{!item.active}}" repo="{{project}}" dataManager="{{dataManager}}"></ui-readme>
             </div>
         </template>
 
     </template>
-    <script>
-        Polymer({
-            ready: function() {
-                debugger;
-                //this.dataManager = document.querySelector('#managerGithub').dataManager;
+</dom-module>
+<script>
+    Polymer({
+        is: 'ui-main',
+        properties: {
+            dataManager: {
+                type: Object,
+                value: {},
+                observer: 'dataManagerChanged'
+            }
+        },
+        ready: function() {
+          this.repos = [
+              {name: 'Bob',filtered:false, language: 'Smith'},
+              {name: 'Sally',filtered:false, language: 'Johnson'},
+          ];
+        },
+        dataManagerChanged: function() {
+            debugger;
+            //this.dataManager = document.querySelector('#managerGithub').dataManager;
+            if(this.dataManager.exec) {
                 this.dataManager.exec('getRepos');
                 console.log('Ready main');
-            },
-            showReadme: function(evt, detail, sender) {
-                debugger;
-                var allUiReadme = this.shadowRoot.querySelectorAll('ui-readme'),
-                        clicledRepoName = sender.dataset.projectname,
-                        actualRepo;
-                for(var i= 0,l=allUiReadme.length;i<l;i++) {
-                    actualRepo = allUiReadme[i].repo;
-                    allUiReadme[i].repo.active = (clicledRepoName === actualRepo.name && !actualRepo.active);
-                }
             }
+            
+        },
 
-        });
-    </script>
-</polymer-element>
+        showReadme: function(evt, detail, sender) {
+            debugger;
+            var allUiReadme = this.shadowRoot.querySelectorAll('ui-readme'),
+                    clicledRepoName = sender.dataset.projectname,
+                    actualRepo;
+            for(var i= 0,l=allUiReadme.length;i<l;i++) {
+                actualRepo = allUiReadme[i].repo;
+                allUiReadme[i].repo.active = (clicledRepoName === actualRepo.name && !actualRepo.active);
+            }
+        }
+
+    });
+</script>

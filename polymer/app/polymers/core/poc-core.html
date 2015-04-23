@@ -1,29 +1,32 @@
 <link rel="import" href="../../../components/polymer/polymer.html">
-<polymer-element name="poc-core">
+
+<dom-module id="poc-core">
     <template>
     </template>
-    <script>
+</dom-module>
 
-        (function(){
-            var dataCore = (function(){
-                //TODO create mehtod 'addDataApi' to add new apis here
-                var getRegistedDataApis = function(apiName) {
-                        var apisList = {
-                            'data-api-github': document.querySelector('ui-index').$.dataapigithub
-                        };
-                        return apisList[apiName];
-                    },
-                    callCore =  function(dataApi, method, componentCallBack, params) {
-                        var api = getRegistedDataApis(dataApi);
-                        api[method](componentCallBack, params);
+<script>
+
+    (function(){
+        var dataCore = (function(){
+            //TODO create mehtod 'addDataApi' to add new apis here
+            var getRegistedDataApis = function(apiName) {
+                    var apisList = {
+                        'data-api-github': document.querySelector('ui-index').$.dataapigithub
                     };
-
-                return {
-                    callCore: callCore
+                    return apisList[apiName];
+                },
+                callCore =  function(dataApi, method, componentCallBack, params) {
+                    var api = getRegistedDataApis(dataApi);
+                    api[method](componentCallBack, params);
                 };
-            })();
-            return Polymer(dataCore);
-        })();
 
-    </script>
-</polymer-element>
+            return {
+                is: 'poc-core',
+                callCore: callCore
+            };
+        })();
+        return Polymer(dataCore);
+    })();
+
+</script>

@@ -1,16 +1,17 @@
 <link rel="import" href="../../../components/polymer/polymer.html">
-<polymer-element name="ui-readme" attributes="repo dataManager">
-    <template>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-        <style>
-            .more-stuff {
-                padding:15pt;
-            }
-            .more-stuff h3 {
-                background-color: '#D8D8D8';
-                font-weight: bold;
-            }
-        </style>
+
+<dom-module id="ui-readme">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <style>
+        .more-stuff {
+            padding:15pt;
+        }
+        .more-stuff h3 {
+            background-color: '#D8D8D8';
+            font-weight: bold;
+        }
+    </style>
+    <template>    
         <div class="more-stuff"  >
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -20,16 +21,27 @@
                 </div>
             </div>
         </div>
-        </template>
-    <script>
+    </template>
+</dom-module>
+
+<script>
     Polymer({
+        is: 'ui-readme',
+        attributes: {
+            repo:{
+                value:{}
+            },
+            dataManager:{
+                value: {}
+            }
+        },
         readMeContent: '',
-        repo:{},
-        dataManager: {},
+        //repo:{},
+        //dataManager: {},
         ready: function() {
             //debugger;
         },
-        observe: {
+        observes: {
             'repo.active': 'repoActiveChanged',
             'dataManager.readMe': 'repoReadMeChanged'
             //'repo.readMe': 'repoReadMeChanged'
@@ -47,5 +59,4 @@
         }
 
     });
-    </script>
-</polymer-element>
+</script>
