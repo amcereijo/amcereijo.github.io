@@ -13,7 +13,7 @@ app.github = (function() {
 	},
 	getReposUrl =  function() {
 		return 'https://api.github.com/users/' + getUsername() +
-			'/repos';
+			'/repos?per_page=100';
 	},
 	getReadMeUrl =  function(repoName) {
 		return 'https://api.github.com/repos/' + getUsername() + 
