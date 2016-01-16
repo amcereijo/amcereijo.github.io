@@ -3,23 +3,23 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<style>
 		.profileImg {
-			position: relative;
-		    top:10;
-		    margin-bottom: 20;
-		    width: 200;
-		    height: 200;
+		    width: 100%;
 		}
-		.profileData {
-			position: absolute;
-			left: 230;
-			top:80;
+		.profileData dt {
+			width: auto;
+			padding-right: 20px;
 		}
-		.profileName {
-			position: absolute;
-			left: 320;
-			top:15;
+		.profileData dd {
+			margin-left: auto;
 		}
-		
+		.row-centered {
+		  display: table-row;
+		}
+		.col-centered {
+		  display: table-cell;
+		  float: none;
+		  vertical-align: middle;
+		}
 		.body {
 			background-color: #FAFAFA;
 		}
@@ -50,20 +50,27 @@
 
 	
 	<script id="header-template" type="text/x-handlebars-template">
+		<div class="row row-centered">
+			<div class="col-xs-3 col-centered">
+				<img class="profileImg img-thumbnail" src="{{avatar_url}}"/>
+			</div>
+			<div class="col-xs-9 col-centered">
+				<h2>{{name}}</h2>
+				<dl class="dl-horizontal profileData">
+					<dt>Username:</dt>
+					<dd>
+						<a href="{{html_url}}">{{login}}</a>
+					</dd>
+					<dt>Email:</dt>
+					<dd>{{email}}</dd>
+					<dt>Location:</dt>
+					<dd>{{location}}</dd>
 
-		<img class="profileImg img-thumbnail" src="{{avatar_url}}"/>
-		<h2 class="profileName">{{name}}</h2>
-		<dl class="dl-horizontal profileData">
-			<dt>Username:</dt>
-			<dd>
-				<a href="{{html_url}}">{{login}}</a>
-			</dd>
-			<dt>Email:</dt>
-			<dd>{{email}}</dd>
-			<dt>Location:</dt>
-			<dd>{{location}}</dd>
+				</dl>
+			</div>
+		</div>
 
-		</dl>
+		
 		
 	</script>
 
