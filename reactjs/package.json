@@ -1,0 +1,19 @@
+{
+  "name": "amcereijo.github.io.react",
+  "description": "Reactjs version of amcereijo.github.io",
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babelify": "^7.2.0",
+    "browserify": "^13.0.0"
+  },
+  "dependencies": {
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7"
+  },
+  "scripts": {
+    "build": "browserify -t [ babelify --presets [ es2015 stage-0 react ] ] index.js > build.js"
+  }
+}
