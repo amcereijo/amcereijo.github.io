@@ -19,3 +19,8 @@ In "js/mock.js" you can configure mock properties:
 ## Polymer version
 All needed files to replicate the same functionality using Polymer are under "polymer" folder.
 Check the output in [http://amcereijo.github.io/polymer/index.html](http://amcereijo.github.io/polymer/index.html)
+
+
+## React.js version ...In progress...
+All needed files to replcate the same functionality using React.js are under "reactjs" folder.
+Check the output in [http://amcereijo.github.io/reactjs/index.html](http://amcereijo.github.io/reactjs/index.html)
