@@ -164,7 +164,7 @@ Header.propTypes = {
 };
 
 },{"react":163}],3:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -172,7 +172,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -194,37 +194,46 @@ var Nav = function (_Component) {
 	}
 
 	_createClass(Nav, [{
-		key: "render",
+		key: 'onClick',
+		value: function onClick(value) {
+			console.log('Selected: ', value);
+		}
+	}, {
+		key: 'render',
 		value: function render() {
+			var _this2 = this;
+
 			return _react2.default.createElement(
-				"nav",
-				{ className: "container" },
+				'nav',
+				{ className: 'container' },
 				_react2.default.createElement(
-					"p",
-					{ className: "text-left" },
+					'p',
+					{ className: 'text-left' },
 					_react2.default.createElement(
-						"span",
-						{ id: "laguages" },
+						'span',
+						{ id: 'laguages' },
 						_react2.default.createElement(
-							"span",
-							{ className: "languageBtn btn btn-default disabled" },
-							"All"
+							'span',
+							{ onClick: this.onClick.bind(this, ''), className: 'languageBtn btn btn-default disabled' },
+							'All'
 						),
 						this.props.languages.map(function (language, i) {
 							return _react2.default.createElement(
-								"span",
-								{ key: language.name, className: "languageBtn btn btn-default",
+								'span',
+								{ onClick: _this2.onClick.bind(_this2, language.name),
+									key: language.name,
+									className: 'languageBtn btn btn-default',
 									style: { backgroundColor: language.color },
-									"data-language": language.name },
+									'data-language': language.name },
 								language.name
 							);
 						})
 					)
 				),
 				_react2.default.createElement(
-					"p",
-					{ className: "text-left" },
-					_react2.default.createElement("input", { type: "text", className: "form-control searchRepos", placeholder: "Search" })
+					'p',
+					{ className: 'text-left' },
+					_react2.default.createElement('input', { type: 'text', className: 'form-control searchRepos', placeholder: 'Search' })
 				)
 			);
 		}
@@ -237,7 +246,7 @@ exports.default = Nav;
 
 
 Nav.propTypes = {
-	languages: _react.PropTypes.array.isRequired
+	languages: _react.PropTypes.arrayOf(_react.PropTypes.object.isRequired).isRequired
 };
 
 },{"react":163}],4:[function(require,module,exports){

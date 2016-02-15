@@ -1,17 +1,25 @@
 import React, { Component, PropTypes } from 'react';
 
 export default class Nav extends Component {
+	onClick(value) {
+		console.log('Selected: ', value);
+	}
+
 	render() {
 		return (
 		<nav className="container">
 			<p className="text-left">
 				<span id="laguages">
-					<span className="languageBtn btn btn-default disabled">All</span>
+					<span onClick={this.onClick.bind(this, '')} className="languageBtn btn btn-default disabled">All</span>
 
 					{this.props.languages.map((language, i) =>
-	          <span key={language.name} className="languageBtn btn btn-default" 
+	          <span onClick={this.onClick.bind(this, language.name)}
+	          	key={language.name}
+	          	className="languageBtn btn btn-default"
 	          	style={{backgroundColor: language.color }}
-	          	data-language={language.name}>{language.name}</span>
+	          	data-language={language.name}>
+	          		{language.name}
+	          </span>
 	        )}
 				</span>
 			</p>
@@ -22,5 +30,7 @@ export default class Nav extends Component {
 }
 
 Nav.propTypes = {
-  languages: PropTypes.array.isRequired,
+  languages: PropTypes.arrayOf(
+			PropTypes.object.isRequired
+		).isRequired,
 };
