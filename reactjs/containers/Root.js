@@ -9,6 +9,9 @@ export default class Root extends Component {
 			{name: 'Javascript', color: 'blue'},
 			{name: 'Java', color: 'red'},
 		];
+		const filterFunction = (evt) => {
+			console.log('Event:', evt.target.value);
+		};
 		return (
 			<div>
 				<Header name = "Angel Cereijo"
@@ -17,7 +20,7 @@ export default class Root extends Component {
 				  html_url = "https://github.com/amcereijo"
 				  email = "amcereijo@gmail.com"
 				  location = "Madrid" />
-				<Nav languages={languages} />
+				<Nav languages={languages} filterFunction={filterFunction} />
 				<Footer />
 			</div>
 		);

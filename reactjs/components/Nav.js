@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import InputFilter from './inputFilter';
 
 export default class Nav extends Component {
 	onClick(value) {
@@ -23,7 +24,7 @@ export default class Nav extends Component {
 	        )}
 				</span>
 			</p>
-			<p className="text-left"><input type="text" className="form-control searchRepos" placeholder="Search" /></p>
+			<InputFilter filterFunction={this.props.filterFunction} />
 		</nav>
 		);
 	}
@@ -33,4 +34,5 @@ Nav.propTypes = {
   languages: PropTypes.arrayOf(
 			PropTypes.object.isRequired
 		).isRequired,
+  filterFunction: PropTypes.func.isRequired,
 };
