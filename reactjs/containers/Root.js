@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Nav from '../components/Nav';
 
 export default class Root extends Component {
 	render() {
+		const languages = [
+			{name: 'Javascript', color: 'blue'},
+			{name: 'Java', color: 'red'},
+		];
 		return (
 			<div>
 				<Header name = "Angel Cereijo"
@@ -12,7 +17,7 @@ export default class Root extends Component {
 				  html_url = "https://github.com/amcereijo"
 				  email = "amcereijo@gmail.com"
 				  location = "Madrid" />
-
+				<Nav languages={languages} />
 				<Footer />
 			</div>
 		);
