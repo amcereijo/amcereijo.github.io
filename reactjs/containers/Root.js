@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Nav from '../components/Nav';
+import ProjectList from '../components/ProjectList';
+import projectsMock from '../mocks/projects';
 
 export default class Root extends Component {
 	render() {
@@ -9,6 +11,7 @@ export default class Root extends Component {
 			{name: 'Javascript', color: 'blue'},
 			{name: 'Java', color: 'red'},
 		];
+
 		const filterFunction = (evt) => {
 			console.log('Event:', evt.target.value);
 		};
@@ -21,6 +24,7 @@ export default class Root extends Component {
 				  email = "amcereijo@gmail.com"
 				  location = "Madrid" />
 				<Nav languages={languages} filterFunction={filterFunction} />
+				<ProjectList projects={projectsMock} />
 				<Footer />
 			</div>
 		);
