@@ -286,21 +286,30 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Project = function (_Component) {
 	_inherits(Project, _Component);
 
-	function Project() {
+	function Project(props) {
 		_classCallCheck(this, Project);
 
-		return _possibleConstructorReturn(this, Object.getPrototypeOf(Project).apply(this, arguments));
+		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Project).call(this, props));
+
+		_this.state = { expanded: false };
+		return _this;
 	}
 
 	_createClass(Project, [{
+		key: 'clickExpand',
+		value: function clickExpand() {
+			console.log('projectName: ', this.props.project.name);
+			this.setState({ expanded: !this.state.expanded });
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			return _react2.default.createElement(
 				'div',
 				{ className: 'panel panel-default panelProject', 'data-projectname': this.props.project.name },
-				_react2.default.createElement(_ProjectHeader2.default, { project: this.props.project }),
+				_react2.default.createElement(_ProjectHeader2.default, { visible: this.state.expanded, project: this.props.project, clickExpand: this.clickExpand.bind(this) }),
 				_react2.default.createElement(_ProjectDescription2.default, { project: this.props.project }),
-				_react2.default.createElement(_ProjectReadme2.default, { readmeContent: this.props.readmeContent || 'README' })
+				_react2.default.createElement(_ProjectReadme2.default, { visible: this.state.expanded, readmeContent: this.props.readmeContent })
 			);
 		}
 	}]);
@@ -315,6 +324,8 @@ Project.propTypes = {
 	project: _react.PropTypes.object.isRequired,
 	readmeContent: _react.PropTypes.string
 };
+
+Project.defaultProps = { readmeContent: 'README' };
 
 },{"./ProjectDescription":5,"./ProjectHeader":6,"./ProjectReadme":8,"react":170}],5:[function(require,module,exports){
 "use strict";
@@ -430,13 +441,9 @@ var ProjectHeader = function (_Component) {
 	}
 
 	_createClass(ProjectHeader, [{
-		key: 'onClick',
-		value: function onClick(projectName) {
-			console.log('projectName: ', projectName);
-		}
-	}, {
 		key: 'render',
 		value: function render() {
+			var spanClasses = 'glyphicon ' + (this.props.visible ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down');
 			return _react2.default.createElement(
 				'div',
 				{ className: 'panel-heading project-name', style: { backgroundColor: this.props.project.color } },
@@ -445,7 +452,7 @@ var ProjectHeader = function (_Component) {
 					{ className: 'panel-title' },
 					this.props.project.name
 				),
-				_react2.default.createElement('span', { onClick: this.onClick.bind(this, this.props.project.name), className: 'glyphicon glyphicon-chevron-down', 'aria-hidden': 'true' }),
+				_react2.default.createElement('span', { onClick: this.props.clickExpand, className: spanClasses, 'aria-hidden': 'true' }),
 				_react2.default.createElement(
 					'span',
 					{ style: { fontWeight: 'bold' } },
@@ -462,7 +469,9 @@ exports.default = ProjectHeader;
 
 
 ProjectHeader.propTypes = {
-	project: _react.PropTypes.object.isRequired
+	visible: _react.PropTypes.bool.isRequired,
+	project: _react.PropTypes.object.isRequired,
+	clickExpand: _react.PropTypes.func.isRequired
 };
 
 },{"react":170}],7:[function(require,module,exports){
@@ -523,7 +532,7 @@ ProjectList.propTypes = {
 };
 
 },{"./Project":4,"react":170}],8:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -531,7 +540,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -553,26 +562,27 @@ var ProjectReadme = function (_Component) {
 	}
 
 	_createClass(ProjectReadme, [{
-		key: "render",
+		key: 'render',
 		value: function render() {
+			var principalClasses = 'more-stuff ' + (this.props.visible ? '' : 'hide');
 			return _react2.default.createElement(
-				"div",
-				{ className: "more-stuff hide" },
+				'div',
+				{ className: principalClasses },
 				_react2.default.createElement(
-					"div",
-					{ className: "panel panel-default" },
+					'div',
+					{ className: 'panel panel-default' },
 					_react2.default.createElement(
-						"div",
-						{ className: "panel-heading" },
+						'div',
+						{ className: 'panel-heading' },
 						_react2.default.createElement(
-							"h3",
-							{ className: "panel-title" },
-							"README.md"
+							'h3',
+							{ className: 'panel-title' },
+							'README.md'
 						)
 					),
 					_react2.default.createElement(
-						"div",
-						{ className: "panel-body" },
+						'div',
+						{ className: 'panel-body' },
 						this.props.readmeContent
 					)
 				)
@@ -587,7 +597,8 @@ exports.default = ProjectReadme;
 
 
 ProjectReadme.propTypes = {
-	readmeContent: _react.PropTypes.string.isRequired
+	readmeContent: _react.PropTypes.string,
+	visible: _react.PropTypes.bool.isRequired
 };
 
 },{"react":170}],9:[function(require,module,exports){
