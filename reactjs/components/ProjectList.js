@@ -5,9 +5,9 @@ export default class ProjectList extends Component {
 	render() {
 		return (
 			<main id="main" className="container">
-			{this.props.projects.map((project, i) => {
-				return <Project key={i} project={project} />
-			})}
+			{this.props.projects.map((project, i) =>
+				<Project key={i} project={project} />
+			)}
 			</main>
 		);
 	}
