@@ -1,18 +1,11 @@
 import React, { Component, PropTypes } from 'react';
+import ProjectHeader from './ProjectHeader';
 
 export default class Project extends Component {
 	render() {
 		return (
 			 <div key={this.props.key} className="panel panel-default panelProject" data-projectname={this.props.project.name}>
-				<div className="panel-heading project-name" style={{backgroundColor:this.props.project.color}}>
-					<h3 className="panel-title" >{this.props.project.name}</h3>
-
-					<span className="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-
-					<span style={{fontWeight: 'bold'}}>
-						{this.props.project.language || 'Other'}
-					</span>
-				</div>
+				<ProjectHeader project={this.props.project} />
 				<div className="panel-body">
 					<blockquote>{this.props.project.description}</blockquote>
 					<dl>
