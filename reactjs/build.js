@@ -28,38 +28,7 @@ function receiveProfile(profileName, json) {
   return {
     type: RECEIVE_PROFILE,
     profileName: profileName,
-    profile: {
-      "login": "amcereijo",
-      "id": 2098733,
-      "avatar_url": "https://avatars.githubusercontent.com/u/2098733?v=3",
-      "gravatar_id": "",
-      "url": "https://api.github.com/users/amcereijo",
-      "html_url": "https://github.com/amcereijo",
-      "followers_url": "https://api.github.com/users/amcereijo/followers",
-      "following_url": "https://api.github.com/users/amcereijo/following{/other_user}",
-      "gists_url": "https://api.github.com/users/amcereijo/gists{/gist_id}",
-      "starred_url": "https://api.github.com/users/amcereijo/starred{/owner}{/repo}",
-      "subscriptions_url": "https://api.github.com/users/amcereijo/subscriptions",
-      "organizations_url": "https://api.github.com/users/amcereijo/orgs",
-      "repos_url": "https://api.github.com/users/amcereijo/repos",
-      "events_url": "https://api.github.com/users/amcereijo/events{/privacy}",
-      "received_events_url": "https://api.github.com/users/amcereijo/received_events",
-      "type": "User",
-      "site_admin": false,
-      "name": "Angel Cereijo",
-      "company": null,
-      "blog": null,
-      "location": "Madrid",
-      "email": "amcereijo@gmail.com",
-      "hireable": false,
-      "bio": null,
-      "public_repos": 33,
-      "public_gists": 0,
-      "followers": 7,
-      "following": 4,
-      "created_at": "2012-08-05T15:16:08Z",
-      "updated_at": "2015-03-22T15:27:29Z"
-    },
+    profile: json,
     receivedAt: Date.now()
   };
 }
@@ -813,7 +782,6 @@ var GithubApp = function (_Component) {
 	}, {
 		key: 'componentWillReceiveProps',
 		value: function componentWillReceiveProps(nextProps) {
-			console.log('componentWillReceiveProps: ', nextProps);
 			if (nextProps.profileName !== this.props.profileName) {
 				var dispatch = nextProps.dispatch;
 				var profileName = nextProps.profileName;
@@ -825,22 +793,15 @@ var GithubApp = function (_Component) {
 		key: 'render',
 		value: function render() {
 			var languages = [{ name: 'Javascript', color: 'blue' }, { name: 'Java', color: 'red' }];
-
 			var filterFunction = function filterFunction(evt) {
 				console.log('Event:', evt.target.value);
 			};
-
 			var _props = this.props;
 			var profileName = _props.profileName;
 			var data = _props.data;
 			var isFetching = _props.isFetching;
 			var lastUpdated = _props.lastUpdated;
 
-
-			console.log('DATA:::: ', data);
-			console.log('profileName:::: ', profileName);
-			console.log('isFetching:::: ', isFetching);
-			console.log('lastUpdated:::: ', lastUpdated);
 
 			return _react2.default.createElement(
 				'div',
@@ -949,7 +910,7 @@ var Root = function (_Component) {
 
 exports.default = Root;
 
-},{"../store/configureStore":199,"./GithubApp":11,"react":185,"react-redux":21}],13:[function(require,module,exports){
+},{"../store/configureStore":200,"./GithubApp":11,"react":185,"react-redux":21}],13:[function(require,module,exports){
 'use strict';
 
 var _react = require('react');
@@ -21879,8 +21840,6 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
-var _redux = require('redux');
-
 var _profileActions = require('../actions/profileActions');
 
 function profileFn() {
@@ -21918,20 +21877,36 @@ function profileForName() {
 		case _profileActions.RECEIVE_PROFILE:
 		case _profileActions.REQUEST_PROFILE:
 			var dataToReturn = Object.assign({}, state, { profile: profileFn(state.profileName, action) });
-			console.log('return profileForName: ', dataToReturn);
 			return dataToReturn;
 		default:
 			return state;
 	}
 }
 
+exports.default = profileForName;
+
+},{"../actions/profileActions":1}],199:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _redux = require('redux');
+
+var _profileReducer = require('./profileReducer');
+
+var _profileReducer2 = _interopRequireDefault(_profileReducer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var rootReducer = (0, _redux.combineReducers)({
-	profileForName: profileForName
+	profileForName: _profileReducer2.default
 });
 
 exports.default = rootReducer;
 
-},{"../actions/profileActions":1,"redux":193}],199:[function(require,module,exports){
+},{"./profileReducer":198,"redux":193}],200:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -21961,4 +21936,4 @@ function configureStore(initialState) {
 	return (0, _redux.createStore)(_reducers2.default, initialState, (0, _redux.applyMiddleware)(_reduxThunk2.default, loggerMiddleware));
 };
 
-},{"../reducers/reducers":198,"redux":193,"redux-logger":186,"redux-thunk":187}]},{},[13]);
+},{"../reducers/reducers":199,"redux":193,"redux-logger":186,"redux-thunk":187}]},{},[13]);
