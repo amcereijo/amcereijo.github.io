@@ -1,6 +1,12 @@
 import React, { Component, PropTypes } from 'react';
+import marked from 'marked';
 
 export default class ProjectReadme extends Component {
+	createMarkup() {
+		const markdownContent = atob(this.props.readmeContent);
+		return {__html: marked(markdownContent)};
+	}
+
 	render() {
 		const principalClasses = `more-stuff ${this.props.visible? '' : 'hide'}`;
 		return (
@@ -9,8 +15,7 @@ export default class ProjectReadme extends Component {
 					<div className="panel-heading">
 						<h3 className="panel-title" >README.md</h3>
 					</div>
-					<div className="panel-body">
-					{this.props.readmeContent}
+					<div className="panel-body" dangerouslySetInnerHTML={this.createMarkup()}>
 					</div>
 				</div>
 			</div>

@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 
 import { fetchProfileIfNeeded } from '../actions/profileActions';
 import { fetchProjectsIfNeeded } from '../actions/projectsActions';
+import { fetchReadmeIfNeeded } from '../actions/readmeActions';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Nav from '../components/Nav';
 import ProjectList from '../components/ProjectList';
-import projectsMock from '../mocks/projects';
 
 class GithubApp extends Component {
 
@@ -30,6 +30,11 @@ class GithubApp extends Component {
 		}
 	}
 
+	clickExpandCollapsProject(projectName) {
+		const { dispatch } = this.props;
+		dispatch(fetchReadmeIfNeeded(this.props.profileName, projectName));
+	}
+
 	render() {
 		const languages = [
 			{name: 'Javascript', color: 'blue'},
@@ -38,8 +43,8 @@ class GithubApp extends Component {
 		const filterFunction = (evt) => {
 			console.log('Event:', evt.target.value);
 		};
-		const { profileName, data, isFetching, lastUpdated, projects } = this.props;
-
+		const { profileName, data, isFetching, lastUpdated, projects, readme } = this.props;
+		console.log('Readme: ', readme);
 		return (
 			<div>
 				<Header name = {data.name}
@@ -49,7 +54,7 @@ class GithubApp extends Component {
 				  email = {data.email}
 				  location = {data.location} />
 				<Nav languages={languages} filterFunction={filterFunction} />
-				<ProjectList projects={projects} />
+				<ProjectList projects={projects} readme={readme} onExpandCollapsProject={this.clickExpandCollapsProject.bind(this)}/>
 				<Footer />
 			</div>
 		);
@@ -66,7 +71,7 @@ GithubApp.propTypes = {
 
 
 function mapStateToProps(state) {
-	const { profileForName, projectsForName } = state;
+	const { profileForName, projectsForName, readmeForProject } = state;
 	const {
 		isFetching,
 		lastUpdated,
@@ -76,15 +81,18 @@ function mapStateToProps(state) {
 		data: {},
  	};
  	const {
- 		projects
+ 		projects,
  	} = projectsForName.projects || {
- 		isFetching: true,
  		projects: [],
+ 	}
+ 	const readme = readmeForProject || {
+ 		readme: {},
  	}
 
 	return {
 		data,
 		projects,
+		readme,
 		isFetching,
 		lastUpdated,
 	};
