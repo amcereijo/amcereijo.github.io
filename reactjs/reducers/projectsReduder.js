@@ -1,4 +1,44 @@
 import { REQUEST_PROJECTS, RECEIVE_PROJECTS } from '../actions/projectsActions';
+const languageColorMap = [];
+const colors = [];
+
+function _generateNewColor() {
+	const letters = ['A', 'B', 'C', 'D', 'E'];
+	let color = '#';
+	for (let i = 0; i < 3; i++) {
+  	color += letters[Math.floor(Math.random() * letters.length)];
+	}
+  if(colors.indexOf(color) !== -1) {
+  	color = _generateNewColor();
+  }
+  return color;
+}
+
+function _fillColors(projects) {
+	const languageColors = {};
+	return projects.map((project) => {
+		let color;
+		const language = project.language || 'other';
+		if(languageColors[language]) {
+			project.languageColor = languageColors[language];
+		} else {
+			color = _generateNewColor();
+	    colors.push(color);
+	    languageColors[language] = color;
+	    languageColorMap.push({name: language, color: color});
+	    project.languageColor = color;
+		}
+		return project;
+	});
+}
+
+function _mapDates(projects) {
+	return projects.map((project) => {
+		const d = new Date(project.updated_at);
+		project.updated_at = d.toLocaleDateString() + ' at ' + d.toLocaleTimeString();
+		return project;
+	});
+}
 
 function projectsFn(state = {
 	isFetching: false,
@@ -12,10 +52,14 @@ function projectsFn(state = {
 				didInvalidate: false,
 			});
 		case RECEIVE_PROJECTS:
+			let projects = _mapDates(action.projects);
+			projects = _fillColors(action.projects);
+console.log('-----------> languageColorMap: ', languageColorMap);
 			return Object.assign({}, state, {
 				isFetching: false,
 				didInvalidate: false,
-				projects: action.projects,
+				projects: projects,
+				languages: languageColorMap,
 				lastUpdated: action.receivedAt,
 			});
 		default:

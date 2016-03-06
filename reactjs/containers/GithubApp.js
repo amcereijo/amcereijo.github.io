@@ -36,15 +36,15 @@ class GithubApp extends Component {
 	}
 
 	render() {
-		const languages = [
-			{name: 'Javascript', color: 'blue'},
-			{name: 'Java', color: 'red'},
-		];
+		// const languages = [
+		// 	{name: 'Javascript', color: 'blue'},
+		// 	{name: 'Java', color: 'red'},
+		// ];
 		const filterFunction = (evt) => {
 			console.log('Event:', evt.target.value);
 		};
-		const { profileName, data, isFetching, lastUpdated, projects, readme } = this.props;
-		console.log('Readme: ', readme);
+		const { profileName, data, isFetching, lastUpdated, projects, languages, readme } = this.props;
+		console.log('languages: ', languages);
 		return (
 			<div>
 				<Header name = {data.name}
@@ -82,8 +82,9 @@ function mapStateToProps(state) {
  	};
  	const {
  		projects,
+ 		languages,
  	} = projectsForName.projects || {
- 		projects: [],
+ 		projects: [], languages: [],
  	}
  	const readme = readmeForProject || {
  		readme: {},
@@ -92,6 +93,7 @@ function mapStateToProps(state) {
 	return {
 		data,
 		projects,
+		languages,
 		readme,
 		isFetching,
 		lastUpdated,

@@ -5,7 +5,7 @@ export default class ProjectHeader extends Component {
 	render() {
 		const spanClasses = `glyphicon ${this.props.visible ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down'}`;
 		return (
-		 	<div className="panel-heading project-name" style={{backgroundColor:this.props.project.color}}>
+		 	<div className="panel-heading project-name" style={{backgroundColor:this.props.project.languageColor}}>
 				<h3 className="panel-title" >{this.props.project.name}</h3>
 
 				<span onClick={this.props.clickExpand} className={spanClasses} aria-hidden="true"></span>

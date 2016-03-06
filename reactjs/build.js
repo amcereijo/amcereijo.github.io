@@ -645,7 +645,7 @@ var ProjectHeader = function (_Component) {
 			var spanClasses = 'glyphicon ' + (this.props.visible ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down');
 			return _react2.default.createElement(
 				'div',
-				{ className: 'panel-heading project-name', style: { backgroundColor: this.props.project.color } },
+				{ className: 'panel-heading project-name', style: { backgroundColor: this.props.project.languageColor } },
 				_react2.default.createElement(
 					'h3',
 					{ className: 'panel-title' },
@@ -950,7 +950,10 @@ var GithubApp = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var languages = [{ name: 'Javascript', color: 'blue' }, { name: 'Java', color: 'red' }];
+			// const languages = [
+			// 	{name: 'Javascript', color: 'blue'},
+			// 	{name: 'Java', color: 'red'},
+			// ];
 			var filterFunction = function filterFunction(evt) {
 				console.log('Event:', evt.target.value);
 			};
@@ -960,9 +963,10 @@ var GithubApp = function (_Component) {
 			var isFetching = _props.isFetching;
 			var lastUpdated = _props.lastUpdated;
 			var projects = _props.projects;
+			var languages = _props.languages;
 			var readme = _props.readme;
 
-			console.log('Readme: ', readme);
+			console.log('languages: ', languages);
 			return _react2.default.createElement(
 				'div',
 				null,
@@ -1005,10 +1009,11 @@ function mapStateToProps(state) {
 	var data = _ref.data;
 
 	var _ref2 = projectsForName.projects || {
-		projects: []
+		projects: [], languages: []
 	};
 
 	var projects = _ref2.projects;
+	var languages = _ref2.languages;
 
 	var readme = readmeForProject || {
 		readme: {}
@@ -1017,6 +1022,7 @@ function mapStateToProps(state) {
 	return {
 		data: data,
 		projects: projects,
+		languages: languages,
 		readme: readme,
 		isFetching: isFetching,
 		lastUpdated: lastUpdated
@@ -23353,6 +23359,47 @@ Object.defineProperty(exports, "__esModule", {
 
 var _projectsActions = require('../actions/projectsActions');
 
+var languageColorMap = [];
+var colors = [];
+
+function _generateNewColor() {
+	var letters = ['A', 'B', 'C', 'D', 'E'];
+	var color = '#';
+	for (var i = 0; i < 3; i++) {
+		color += letters[Math.floor(Math.random() * letters.length)];
+	}
+	if (colors.indexOf(color) !== -1) {
+		color = _generateNewColor();
+	}
+	return color;
+}
+
+function _fillColors(projects) {
+	var languageColors = {};
+	return projects.map(function (project) {
+		var color = undefined;
+		var language = project.language || 'other';
+		if (languageColors[language]) {
+			project.languageColor = languageColors[language];
+		} else {
+			color = _generateNewColor();
+			colors.push(color);
+			languageColors[language] = color;
+			languageColorMap.push({ name: language, color: color });
+			project.languageColor = color;
+		}
+		return project;
+	});
+}
+
+function _mapDates(projects) {
+	return projects.map(function (project) {
+		var d = new Date(project.updated_at);
+		project.updated_at = d.toLocaleDateString() + ' at ' + d.toLocaleTimeString();
+		return project;
+	});
+}
+
 function projectsFn() {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {
 		isFetching: false,
@@ -23368,10 +23415,14 @@ function projectsFn() {
 				didInvalidate: false
 			});
 		case _projectsActions.RECEIVE_PROJECTS:
+			var projects = _mapDates(action.projects);
+			projects = _fillColors(action.projects);
+			console.log('-----------> languageColorMap: ', languageColorMap);
 			return Object.assign({}, state, {
 				isFetching: false,
 				didInvalidate: false,
-				projects: action.projects,
+				projects: projects,
+				languages: languageColorMap,
 				lastUpdated: action.receivedAt
 			});
 		default:
