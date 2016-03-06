@@ -36,10 +36,6 @@ class GithubApp extends Component {
 	}
 
 	render() {
-		// const languages = [
-		// 	{name: 'Javascript', color: 'blue'},
-		// 	{name: 'Java', color: 'red'},
-		// ];
 		const filterFunction = (evt) => {
 			console.log('Event:', evt.target.value);
 		};
