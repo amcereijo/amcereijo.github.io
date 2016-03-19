@@ -4,14 +4,16 @@ import Project from './Project';
 export default class ProjectList extends Component {
 	render() {
 		const readme = this.props.readme || {};
-		console.log('ProjectList: ', readme);
+		console.log('ProjectList - this.props.projects: ', this.props.projects);
+		const projects = this.props.projects || [];
+		console.log('ProjectList - readme: ', readme);
 		return (
 			<main id="main" className="container">
-			{this.props.projects.map((project, i) =>
+			{projects.map((project, i) =>
 
 				<Project key={i}
 					project={project}
-					readmeContent={readme[project.name]}
+					readmeContent={readme[project.name] || {}}
 					onExpandCollapsProject={this.props.onExpandCollapsProject}/>
 			)}
 			</main>

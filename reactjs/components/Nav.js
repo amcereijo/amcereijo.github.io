@@ -7,13 +7,14 @@ export default class Nav extends Component {
 	}
 
 	render() {
+		const languages = this.props.languages || [];
 		return (
 		<nav className="container">
 			<p className="text-left">
 				<span id="laguages">
 					<span onClick={this.onClick.bind(this, '')} className="languageBtn btn btn-default disabled">All</span>
 
-					{this.props.languages.map((language, i) =>
+					{languages.map((language, i) =>
 	          <span onClick={this.onClick.bind(this, language.name)}
 	          	key={language.name}
 	          	className="languageBtn btn btn-default"

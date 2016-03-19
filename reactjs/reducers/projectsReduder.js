@@ -40,11 +40,35 @@ function _mapDates(projects) {
 	});
 }
 
+function _filterProjects(filterFunctions, projects){
+	for(const key in filterFunctions) {
+		if(filterFunctions.hasOwnFunctions(key) &&
+				typeof filterFunctions[key] === 'function') {
+			projects.filter((project) => {
+				return filterFunctions[key](project.name);
+			});
+		}
+	}
+	// if(filterFunctions.length) {
+	// 	filterFunctions.forEach((filterFunction) => {
+	// 		if(typeof filterFunction === 'function') {
+	// 			projects = filterFunction(projects);
+	// 		}
+	// 	})
+	// }
+	return projects;
+}
+
 function projectsFn(state = {
 	isFetching: false,
 	didInvalidate: false,
-	projects: {}
+	projects: [],
+	filterFunctions: [],
+	languages: []
+
 }, action) {
+	console.log('projectsFn: ', state);
+	const filterFunctions = state.filterFunctions;
 	switch(action.type) {
 		case REQUEST_PROJECTS:
 			return Object.assign({}, state, {
@@ -53,8 +77,8 @@ function projectsFn(state = {
 			});
 		case RECEIVE_PROJECTS:
 			let projects = _mapDates(action.projects);
-			projects = _fillColors(action.projects);
-console.log('-----------> languageColorMap: ', languageColorMap);
+			projects = _fillColors(projects);
+			projects = _filterProjects(filterFunctions, projects);
 			return Object.assign({}, state, {
 				isFetching: false,
 				didInvalidate: false,

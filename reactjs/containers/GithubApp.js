@@ -40,15 +40,16 @@ class GithubApp extends Component {
 			console.log('Event:', evt.target.value);
 		};
 		const { profileName, data, isFetching, lastUpdated, projects, languages, readme } = this.props;
-		console.log('languages: ', languages);
+		console.log('Render languages: ', languages);
+		console.log('Render data: ', data);
 		return (
 			<div>
-				<Header name = {data.name}
-				  avatar_url = {data.avatar_url}
-				  login = {profileName}
-				  html_url = {data.html_url}
-				  email = {data.email}
-				  location = {data.location} />
+				<Header name = {data.name || ''}
+				  avatar_url = {data.avatar_url || ''}
+				  login = {profileName || ''}
+				  html_url = {data.html_url || ''}
+				  email = {data.email || ''}
+				  location = {data.location || ''} />
 				<Nav languages={languages} filterFunction={filterFunction} />
 				<ProjectList projects={projects} readme={readme} onExpandCollapsProject={this.clickExpandCollapsProject.bind(this)}/>
 				<Footer />
@@ -59,7 +60,7 @@ class GithubApp extends Component {
 
 GithubApp.propTypes = {
 	profileName: PropTypes.string.isRequired,
-	profile: PropTypes.object.isRequired,
+	//profile: PropTypes.object.isRequired,
 	isFetching: PropTypes.bool.isRequired,
 	lastUpdated: PropTypes.number,
 	dispatch: PropTypes.func.isRequired,
@@ -68,14 +69,23 @@ GithubApp.propTypes = {
 
 function mapStateToProps(state) {
 	const { profileForName, projectsForName, readmeForProject } = state;
+	console.log('====> profileForName: ', profileForName);
 	const {
 		isFetching,
 		lastUpdated,
 		data,
 	} = profileForName.profile || {
 		isFetching: true,
-		data: {},
+		data: {
+			name: '',
+		  avatar_url: '',
+		  login: '',
+		  html_url: '',
+		  email: '',
+		  location: '',
+		},
  	};
+ 	console.log('====> projectsForName: ', projectsForName);
  	const {
  		projects,
  		languages,

@@ -31,10 +31,13 @@ function fetchProjects(profileName) {
 
 function shouldFetchProjects(state) {
   const projects = state.projects
+  const filterFunctionsChange = state.filterFunctionsChange || false;
   if (!projects) {
     return true
   } else if (projects.isFetching) {
     return false
+  } else if(filterFunctionsChange) {
+    return true;
   } else {
     return projects.didInvalidate
   }

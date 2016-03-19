@@ -24,7 +24,7 @@ function requestProfile(profileName) {
 }
 
 function receiveProfile(profileName, json) {
-  console.log('JSON: ', json);
+  0;
   return {
     type: RECEIVE_PROFILE,
     profileName: profileName,
@@ -89,7 +89,7 @@ function requestProjects(profileName) {
 }
 
 function receiveProjects(profileName, json) {
-  console.log('JSON PROJECTS: ', json);
+  0;
   return {
     type: RECEIVE_PROJECTS,
     profileName: profileName,
@@ -111,10 +111,13 @@ function fetchProjects(profileName) {
 
 function shouldFetchProjects(state) {
   var projects = state.projects;
+  var filterFunctionsChange = state.filterFunctionsChange || false;
   if (!projects) {
     return true;
   } else if (projects.isFetching) {
     return false;
+  } else if (filterFunctionsChange) {
+    return true;
   } else {
     return projects.didInvalidate;
   }
@@ -154,7 +157,7 @@ function requestReadme(projectName) {
 }
 
 function receivePeadme(projectName, json) {
-  console.log('JSON PROJECTS: ', json);
+  0;
   return {
     type: RECEIVE_README,
     projectName: projectName,
@@ -248,7 +251,7 @@ var Header = function (_Component) {
 exports.default = Header;
 
 },{"react":187}],5:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -256,7 +259,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
@@ -278,61 +281,64 @@ var Header = function (_Component) {
 	}
 
 	_createClass(Header, [{
-		key: "render",
+		key: 'render',
 		value: function render() {
+			0;
+			0;
+			0;
 			return _react2.default.createElement(
-				"header",
-				{ className: "container headerElement" },
+				'header',
+				{ className: 'container headerElement' },
 				_react2.default.createElement(
-					"div",
-					{ className: "row row-centered" },
+					'div',
+					{ className: 'row row-centered' },
 					_react2.default.createElement(
-						"div",
-						{ className: "col-xs-3 col-centered" },
-						_react2.default.createElement("img", { className: "profileImg img-thumbnail", src: this.props.avatar_url })
+						'div',
+						{ className: 'col-xs-3 col-centered' },
+						_react2.default.createElement('img', { className: 'profileImg img-thumbnail', src: this.props.avatar_url })
 					),
 					_react2.default.createElement(
-						"div",
-						{ className: "col-xs-9 col-centered" },
+						'div',
+						{ className: 'col-xs-9 col-centered' },
 						_react2.default.createElement(
-							"h2",
+							'h2',
 							null,
 							this.props.name
 						),
 						_react2.default.createElement(
-							"dl",
-							{ className: "dl-horizontal profileData" },
+							'dl',
+							{ className: 'dl-horizontal profileData' },
 							_react2.default.createElement(
-								"dt",
+								'dt',
 								null,
-								"Username:"
+								'Username:'
 							),
 							_react2.default.createElement(
-								"dd",
+								'dd',
 								null,
 								_react2.default.createElement(
-									"a",
+									'a',
 									{ href: this.props.html_url },
 									this.props.login
 								)
 							),
 							_react2.default.createElement(
-								"dt",
+								'dt',
 								null,
-								"Email:"
+								'Email:'
 							),
 							_react2.default.createElement(
-								"dd",
+								'dd',
 								null,
 								this.props.email
 							),
 							_react2.default.createElement(
-								"dt",
+								'dt',
 								null,
-								"Location:"
+								'Location:'
 							),
 							_react2.default.createElement(
-								"dd",
+								'dd',
 								null,
 								this.props.location
 							)
@@ -395,13 +401,14 @@ var Nav = function (_Component) {
 	_createClass(Nav, [{
 		key: 'onClick',
 		value: function onClick(value) {
-			console.log('Selected: ', value);
+			0;
 		}
 	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
+			var languages = this.props.languages || [];
 			return _react2.default.createElement(
 				'nav',
 				{ className: 'container' },
@@ -416,7 +423,7 @@ var Nav = function (_Component) {
 							{ onClick: this.onClick.bind(this, ''), className: 'languageBtn btn btn-default disabled' },
 							'All'
 						),
-						this.props.languages.map(function (language, i) {
+						languages.map(function (language, i) {
 							return _react2.default.createElement(
 								'span',
 								{ onClick: _this2.onClick.bind(_this2, language.name),
@@ -493,14 +500,14 @@ var Project = function (_Component) {
 	_createClass(Project, [{
 		key: 'clickExpand',
 		value: function clickExpand() {
-			console.log('projectName: ', this.props.project.name);
+			0;
 			this.setState({ expanded: !this.state.expanded });
 			this.props.onExpandCollapsProject(this.props.project.name);
 		}
 	}, {
 		key: 'render',
 		value: function render() {
-			console.log('Project -readme : ', this.props.readmeContent);
+			0;
 			return _react2.default.createElement(
 				'div',
 				{ className: 'panel panel-default panelProject', 'data-projectname': this.props.project.name },
@@ -713,14 +720,16 @@ var ProjectList = function (_Component) {
 			var _this2 = this;
 
 			var readme = this.props.readme || {};
-			console.log('ProjectList: ', readme);
+			0;
+			var projects = this.props.projects || [];
+			0;
 			return _react2.default.createElement(
 				'main',
 				{ id: 'main', className: 'container' },
-				this.props.projects.map(function (project, i) {
+				projects.map(function (project, i) {
 					return _react2.default.createElement(_Project2.default, { key: i,
 						project: project,
-						readmeContent: readme[project.name],
+						readmeContent: readme[project.name] || {},
 						onExpandCollapsProject: _this2.props.onExpandCollapsProject });
 				})
 			);
@@ -950,12 +959,8 @@ var GithubApp = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			// const languages = [
-			// 	{name: 'Javascript', color: 'blue'},
-			// 	{name: 'Java', color: 'red'},
-			// ];
 			var filterFunction = function filterFunction(evt) {
-				console.log('Event:', evt.target.value);
+				0;
 			};
 			var _props = this.props;
 			var profileName = _props.profileName;
@@ -966,16 +971,17 @@ var GithubApp = function (_Component) {
 			var languages = _props.languages;
 			var readme = _props.readme;
 
-			console.log('languages: ', languages);
+			0;
+			0;
 			return _react2.default.createElement(
 				'div',
 				null,
-				_react2.default.createElement(_Header2.default, { name: data.name,
-					avatar_url: data.avatar_url,
-					login: profileName,
-					html_url: data.html_url,
-					email: data.email,
-					location: data.location }),
+				_react2.default.createElement(_Header2.default, { name: data.name || '',
+					avatar_url: data.avatar_url || '',
+					login: profileName || '',
+					html_url: data.html_url || '',
+					email: data.email || '',
+					location: data.location || '' }),
 				_react2.default.createElement(_Nav2.default, { languages: languages, filterFunction: filterFunction }),
 				_react2.default.createElement(_ProjectList2.default, { projects: projects, readme: readme, onExpandCollapsProject: this.clickExpandCollapsProject.bind(this) }),
 				_react2.default.createElement(_Footer2.default, null)
@@ -988,7 +994,7 @@ var GithubApp = function (_Component) {
 
 GithubApp.propTypes = {
 	profileName: _react.PropTypes.string.isRequired,
-	profile: _react.PropTypes.object.isRequired,
+	//profile: PropTypes.object.isRequired,
 	isFetching: _react.PropTypes.bool.isRequired,
 	lastUpdated: _react.PropTypes.number,
 	dispatch: _react.PropTypes.func.isRequired
@@ -999,14 +1005,25 @@ function mapStateToProps(state) {
 	var projectsForName = state.projectsForName;
 	var readmeForProject = state.readmeForProject;
 
+	0;
+
 	var _ref = profileForName.profile || {
 		isFetching: true,
-		data: {}
+		data: {
+			name: '',
+			avatar_url: '',
+			login: '',
+			html_url: '',
+			email: '',
+			location: ''
+		}
 	};
 
 	var isFetching = _ref.isFetching;
 	var lastUpdated = _ref.lastUpdated;
 	var data = _ref.data;
+
+	0;
 
 	var _ref2 = projectsForName.projects || {
 		projects: [], languages: []
@@ -2922,7 +2939,7 @@ function warnAboutReceivingStore() {
 
   /* eslint-disable no-console */
   if (typeof console !== 'undefined' && typeof console.error === 'function') {
-    console.error('<Provider> does not support changing `store` on the fly. ' + 'It is most likely that you see this error because you updated to ' + 'Redux 2.x and React Redux 2.x which no longer hot reload reducers ' + 'automatically. See https://github.com/rackt/react-redux/releases/' + 'tag/v2.0.0 for the migration instructions.');
+    0;
   }
   /* eslint-disable no-console */
 }
@@ -5496,7 +5513,7 @@ var Danger = {
           // we're done.
           resultListAssignmentCount += 1;
         } else if (process.env.NODE_ENV !== 'production') {
-          console.error('Danger: Discarding unexpected node:', renderNode);
+          0;
         }
       }
     }
@@ -9767,7 +9784,7 @@ if (process.env.NODE_ENV !== 'production') {
     if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ === 'undefined') {
       // If we're in Chrome or Firefox, provide a download link if not installed.
       if (navigator.userAgent.indexOf('Chrome') > -1 && navigator.userAgent.indexOf('Edge') === -1 || navigator.userAgent.indexOf('Firefox') > -1) {
-        console.debug('Download the React DevTools for a better development experience: ' + 'https://fb.me/react-devtools');
+        0;
       }
     }
 
@@ -9786,7 +9803,7 @@ if (process.env.NODE_ENV !== 'production') {
 
     for (var i = 0; i < expectedFeatures.length; i++) {
       if (!expectedFeatures[i]) {
-        console.error('One or more ES5 shim/shams expected by React are not available: ' + 'https://fb.me/react-warning-polyfills');
+        0;
         break;
       }
     }
@@ -12255,7 +12272,7 @@ var ReactDefaultPerf = {
   printExclusive: function (measurements) {
     measurements = measurements || ReactDefaultPerf._allMeasurements;
     var summary = ReactDefaultPerfAnalysis.getExclusiveSummary(measurements);
-    console.table(summary.map(function (item) {
+    (summary.map(function (item) {
       return {
         'Component class name': item.componentName,
         'Total inclusive time (ms)': roundFloat(item.inclusive),
@@ -12265,7 +12282,7 @@ var ReactDefaultPerf = {
         'Render time per instance (ms)': roundFloat(item.render / item.count),
         'Instances': item.count
       };
-    }));
+    }) && 0);
     // TODO: ReactDefaultPerfAnalysis.getTotalTime() does not return the correct
     // number.
   },
@@ -12273,14 +12290,14 @@ var ReactDefaultPerf = {
   printInclusive: function (measurements) {
     measurements = measurements || ReactDefaultPerf._allMeasurements;
     var summary = ReactDefaultPerfAnalysis.getInclusiveSummary(measurements);
-    console.table(summary.map(function (item) {
+    (summary.map(function (item) {
       return {
         'Owner > component': item.componentName,
         'Inclusive time (ms)': roundFloat(item.time),
         'Instances': item.count
       };
-    }));
-    console.log('Total time:', ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) + ' ms');
+    }) && 0);
+    (ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) && 0);
   },
 
   getMeasurementsSummaryMap: function (measurements) {
@@ -12296,21 +12313,21 @@ var ReactDefaultPerf = {
 
   printWasted: function (measurements) {
     measurements = measurements || ReactDefaultPerf._allMeasurements;
-    console.table(ReactDefaultPerf.getMeasurementsSummaryMap(measurements));
-    console.log('Total time:', ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) + ' ms');
+    (ReactDefaultPerf.getMeasurementsSummaryMap(measurements) && 0);
+    (ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) && 0);
   },
 
   printDOM: function (measurements) {
     measurements = measurements || ReactDefaultPerf._allMeasurements;
     var summary = ReactDefaultPerfAnalysis.getDOMSummary(measurements);
-    console.table(summary.map(function (item) {
+    (summary.map(function (item) {
       var result = {};
       result[DOMProperty.ID_ATTRIBUTE_NAME] = item.id;
       result.type = item.type;
       result.args = JSON.stringify(item.args);
       return result;
-    }));
-    console.log('Total time:', ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) + ' ms');
+    }) && 0);
+    (ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) && 0);
   },
 
   _recordWrite: function (id, fnName, totalTime, args) {
@@ -21324,7 +21341,7 @@ var EventListener = {
       };
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        console.error('Attempted to listen to events during the capture phase on a ' + 'browser that does not support the capture phase. Your application ' + 'will not receive some events.');
+        0;
       }
       return {
         remove: emptyFunction
@@ -22503,7 +22520,7 @@ if (process.env.NODE_ENV !== 'production') {
         return args[argIndex++];
       });
       if (typeof console !== 'undefined') {
-        console.error(message);
+        0;
       }
       try {
         // --- Welcome to debugging React ---
@@ -22616,7 +22633,7 @@ function createLogger() {
   }
 
   if (transformer) {
-    console.error("Option 'transformer' is deprecated, use stateTransformer instead");
+    0;
   }
 
   var logBuffer = [];
@@ -23281,7 +23298,7 @@ exports["default"] = warning;
 function warning(message) {
   /* eslint-disable no-console */
   if (typeof console !== 'undefined' && typeof console.error === 'function') {
-    console.error(message);
+    0;
   }
   /* eslint-enable no-console */
   try {
@@ -23337,7 +23354,7 @@ function profileForName() {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	var action = arguments[1];
 
-	console.log('action:: ', action);
+	0;
 	switch (action.type) {
 		case _profileActions.RECEIVE_PROFILE:
 		case _profileActions.REQUEST_PROFILE:
@@ -23400,14 +23417,41 @@ function _mapDates(projects) {
 	});
 }
 
+function _filterProjects(filterFunctions, projects) {
+	var _loop = function _loop(key) {
+		if (filterFunctions.hasOwnFunctions(key) && typeof filterFunctions[key] === 'function') {
+			projects.filter(function (project) {
+				return filterFunctions[key](project.name);
+			});
+		}
+	};
+
+	for (var key in filterFunctions) {
+		_loop(key);
+	}
+	// if(filterFunctions.length) {
+	// 	filterFunctions.forEach((filterFunction) => {
+	// 		if(typeof filterFunction === 'function') {
+	// 			projects = filterFunction(projects);
+	// 		}
+	// 	})
+	// }
+	return projects;
+}
+
 function projectsFn() {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {
 		isFetching: false,
 		didInvalidate: false,
-		projects: {}
+		projects: [],
+		filterFunctions: [],
+		languages: []
+
 	} : arguments[0];
 	var action = arguments[1];
 
+	0;
+	var filterFunctions = state.filterFunctions;
 	switch (action.type) {
 		case _projectsActions.REQUEST_PROJECTS:
 			return Object.assign({}, state, {
@@ -23416,8 +23460,8 @@ function projectsFn() {
 			});
 		case _projectsActions.RECEIVE_PROJECTS:
 			var projects = _mapDates(action.projects);
-			projects = _fillColors(action.projects);
-			console.log('-----------> languageColorMap: ', languageColorMap);
+			projects = _fillColors(projects);
+			projects = _filterProjects(filterFunctions, projects);
 			return Object.assign({}, state, {
 				isFetching: false,
 				didInvalidate: false,
@@ -23434,7 +23478,7 @@ function projectsForName() {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	var action = arguments[1];
 
-	console.log('action:: ', action);
+	0;
 	switch (action.type) {
 		case _projectsActions.RECEIVE_PROJECTS:
 		case _projectsActions.REQUEST_PROJECTS:
@@ -23488,7 +23532,7 @@ function readmeForProject() {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	var action = arguments[1];
 
-	console.log('action:: ', action);
+	0;
 	switch (action.type) {
 		case _readmeActions.RECEIVE_README:
 		case _readmeActions.REQUEST_README:

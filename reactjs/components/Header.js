@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react';
 
 export default class Header extends Component {
 	render() {
+		console.log('Header render this.props: ', this.props);
+		console.log('Header render this.props.email: ', this.props.email);
+		console.log('Header render this.props.location: ', this.props.location);
 		return (
 			<header className="container headerElement">
 
@@ -20,7 +23,6 @@ export default class Header extends Component {
 							<dd>{this.props.email}</dd>
 							<dt>Location:</dt>
 							<dd>{this.props.location}</dd>
-
 						</dl>
 					</div>
 				</div>
