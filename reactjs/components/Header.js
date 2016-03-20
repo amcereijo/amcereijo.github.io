@@ -9,10 +9,10 @@ export default class Header extends Component {
 			<header className="container headerElement">
 
 				<div className="row row-centered">
-					<div className="col-xs-3 col-centered">
+					<div className="col-xs-2 col-centered">
 						<img className="profileImg img-thumbnail" src={this.props.avatar_url}/>
 					</div>
-					<div className="col-xs-9 col-centered">
+					<div className="col-xs-10 col-centered">
 						<h2>{this.props.name}</h2>
 						<dl className="dl-horizontal profileData">
 							<dt>Username:</dt>
