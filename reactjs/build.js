@@ -294,12 +294,12 @@ var Header = function (_Component) {
 					{ className: 'row row-centered' },
 					_react2.default.createElement(
 						'div',
-						{ className: 'col-xs-3 col-centered' },
+						{ className: 'col-xs-2 col-centered' },
 						_react2.default.createElement('img', { className: 'profileImg img-thumbnail', src: this.props.avatar_url })
 					),
 					_react2.default.createElement(
 						'div',
-						{ className: 'col-xs-9 col-centered' },
+						{ className: 'col-xs-10 col-centered' },
 						_react2.default.createElement(
 							'h2',
 							null,
