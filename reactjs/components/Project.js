@@ -16,9 +16,9 @@ export default class Project extends Component {
 	}
 
 	render() {
-		console.log('Project -readme : ', this.props.readmeContent);
+		const classNames = 'panel panel-default panelProject' + (this.props.project.isVisible === false? ' hidden':'');
 		return (
-			 <div className="panel panel-default panelProject" data-projectname={this.props.project.name}>
+			 <div className={classNames} data-projectname={this.props.project.name}>
 				<ProjectHeader visible={this.state.expanded} project={this.props.project} clickExpand={this.clickExpand.bind(this)} />
 				<ProjectDescription project={this.props.project} />
 				<ProjectReadme visible={this.state.expanded}

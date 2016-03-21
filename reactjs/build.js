@@ -69,8 +69,9 @@ function fetchProfileIfNeeded(profileName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.RECEIVE_PROJECTS = exports.REQUEST_PROJECTS = undefined;
+exports.RECEIVE_FILTER = exports.REQUEST_FILTER = exports.RECEIVE_PROJECTS = exports.REQUEST_PROJECTS = undefined;
 exports.fetchProjectsIfNeeded = fetchProjectsIfNeeded;
+exports.filterFunction = filterFunction;
 
 var _isomorphicFetch = require('isomorphic-fetch');
 
@@ -80,6 +81,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var REQUEST_PROJECTS = exports.REQUEST_PROJECTS = 'REQUEST_PROJECTS';
 var RECEIVE_PROJECTS = exports.RECEIVE_PROJECTS = 'RECEIVE_PROJECTS';
+var REQUEST_FILTER = exports.REQUEST_FILTER = 'REQUEST_FILTER';
+var RECEIVE_FILTER = exports.RECEIVE_FILTER = 'RECEIVE_FILTER';
 
 function requestProjects(profileName) {
   return {
@@ -111,13 +114,10 @@ function fetchProjects(profileName) {
 
 function shouldFetchProjects(state) {
   var projects = state.projects;
-  var filterFunctionsChange = state.filterFunctionsChange || false;
   if (!projects) {
     return true;
   } else if (projects.isFetching) {
     return false;
-  } else if (filterFunctionsChange) {
-    return true;
   } else {
     return projects.didInvalidate;
   }
@@ -128,6 +128,40 @@ function fetchProjectsIfNeeded(profileName) {
     if (shouldFetchProjects(getState())) {
       return dispatch(fetchProjects(profileName));
     }
+  };
+}
+
+function requestFilterFunction(filterFunctionName, isAdd) {
+  return {
+    type: REQUEST_FILTER,
+    filterFunctionName: filterFunctionName,
+    isAdd: isAdd
+  };
+}
+
+function responseFilterFunction(filterFunctions) {
+  return {
+    type: RECEIVE_FILTER,
+    filterFunctions: filterFunctions
+  };
+}
+
+function addRemoveFilterFunctions(state, filterFunctionName, isAdd, filterFunction) {
+  return function (dispatch) {
+    dispatch(requestFilterFunction(filterFunctionName, isAdd));
+    var filterFunctions = state.filterFunctions || {};
+    if (!isAdd && filterFunctions[filterFunctionName]) {
+      delete filterFunctions[filterFunctionName];
+    } else if (isAdd) {
+      filterFunctions[filterFunctionName] = filterFunction;
+    }
+    return dispatch(responseFilterFunction(filterFunctions));
+  };
+}
+
+function filterFunction(name, filterFunction, isAdd) {
+  return function (dispatch, getState) {
+    return dispatch(addRemoveFilterFunctions(getState(), name, isAdd, filterFunction));
   };
 }
 
@@ -507,10 +541,10 @@ var Project = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			0;
+			var classNames = 'panel panel-default panelProject' + (this.props.project.isVisible === false ? ' hidden' : '');
 			return _react2.default.createElement(
 				'div',
-				{ className: 'panel panel-default panelProject', 'data-projectname': this.props.project.name },
+				{ className: classNames, 'data-projectname': this.props.project.name },
 				_react2.default.createElement(_ProjectHeader2.default, { visible: this.state.expanded, project: this.props.project, clickExpand: this.clickExpand.bind(this) }),
 				_react2.default.createElement(_ProjectDescription2.default, { project: this.props.project }),
 				_react2.default.createElement(_ProjectReadme2.default, { visible: this.state.expanded,
@@ -959,10 +993,8 @@ var GithubApp = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var filterFunction = function filterFunction(evt) {
-				0;
-			};
 			var _props = this.props;
+			var dispatch = _props.dispatch;
 			var profileName = _props.profileName;
 			var data = _props.data;
 			var isFetching = _props.isFetching;
@@ -971,6 +1003,25 @@ var GithubApp = function (_Component) {
 			var languages = _props.languages;
 			var readme = _props.readme;
 
+			var filterFunctionEvent = function filterFunctionEvent(evt) {
+				var hasEvent = function hasEvent() {
+					return evt && evt.target && evt.keyCode;
+				};
+				var isValidKey = function isValidKey() {
+					return (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode)) || [8, 46, 32].indexOf(evt.keyCode) >= 0
+					);
+				};
+
+				if (hasEvent() && isValidKey()) {
+					(function () {
+						var filterValue = evt.target.value;
+						0;
+						dispatch((0, _projectsActions.filterFunction)('inputFilter', function (actualProjectName) {
+							return actualProjectName && actualProjectName.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0;
+						}, evt.target.value ? true : false));
+					})();
+				}
+			};
 			0;
 			0;
 			return _react2.default.createElement(
@@ -982,7 +1033,7 @@ var GithubApp = function (_Component) {
 					html_url: data.html_url || '',
 					email: data.email || '',
 					location: data.location || '' }),
-				_react2.default.createElement(_Nav2.default, { languages: languages, filterFunction: filterFunction }),
+				_react2.default.createElement(_Nav2.default, { languages: languages, filterFunction: filterFunctionEvent }),
 				_react2.default.createElement(_ProjectList2.default, { projects: projects, readme: readme, onExpandCollapsProject: this.clickExpandCollapsProject.bind(this) }),
 				_react2.default.createElement(_Footer2.default, null)
 			);
@@ -23393,20 +23444,24 @@ function _generateNewColor() {
 
 function _fillColors(projects) {
 	var languageColors = {};
-	return projects.map(function (project) {
-		var color = undefined;
-		var language = project.language || 'other';
-		if (languageColors[language]) {
-			project.languageColor = languageColors[language];
-		} else {
-			color = _generateNewColor();
-			colors.push(color);
-			languageColors[language] = color;
-			languageColorMap.push({ name: language, color: color });
-			project.languageColor = color;
-		}
-		return project;
-	});
+	if (!languageColorMap || languageColorMap.length === 0) {
+		return projects.map(function (project) {
+			var color = undefined;
+			var language = project.language || 'other';
+			if (languageColors[language]) {
+				project.languageColor = languageColors[language];
+			} else {
+				color = _generateNewColor();
+				colors.push(color);
+				languageColors[language] = color;
+				languageColorMap.push({ name: language, color: color });
+				project.languageColor = color;
+			}
+			return project;
+		});
+	} else {
+		return projects;
+	}
 }
 
 function _mapDates(projects) {
@@ -23419,9 +23474,12 @@ function _mapDates(projects) {
 
 function _filterProjects(filterFunctions, projects) {
 	var _loop = function _loop(key) {
-		if (filterFunctions.hasOwnFunctions(key) && typeof filterFunctions[key] === 'function') {
-			projects.filter(function (project) {
-				return filterFunctions[key](project.name);
+		0;
+		if (filterFunctions.hasOwnProperty(key) && typeof filterFunctions[key] === 'function') {
+			projects = projects.map(function (project) {
+				var result = filterFunctions[key](project.name);
+				project.isVisible = result;
+				return project;
 			});
 		}
 	};
@@ -23429,13 +23487,6 @@ function _filterProjects(filterFunctions, projects) {
 	for (var key in filterFunctions) {
 		_loop(key);
 	}
-	// if(filterFunctions.length) {
-	// 	filterFunctions.forEach((filterFunction) => {
-	// 		if(typeof filterFunction === 'function') {
-	// 			projects = filterFunction(projects);
-	// 		}
-	// 	})
-	// }
 	return projects;
 }
 
@@ -23444,7 +23495,7 @@ function projectsFn() {
 		isFetching: false,
 		didInvalidate: false,
 		projects: [],
-		filterFunctions: [],
+		filterFunctions: {},
 		languages: []
 
 	} : arguments[0];
@@ -23474,16 +23525,58 @@ function projectsFn() {
 	}
 }
 
+function filterFn() {
+	var state = arguments.length <= 0 || arguments[0] === undefined ? {
+		isFetching: false,
+		didInvalidate: false,
+		projects: [],
+		filterFunctions: {},
+		languages: []
+
+	} : arguments[0];
+	var action = arguments[1];
+
+	0;
+	var filterFunctions = action.filterFunctions;
+	switch (action.type) {
+		case _projectsActions.REQUEST_FILTER:
+			return Object.assign({}, state, {
+				isFetching: true,
+				didInvalidate: false,
+				filterFunctions: filterFunctions
+			});
+		case _projectsActions.RECEIVE_FILTER:
+			var projects = _mapDates(state.projects);
+			projects = _fillColors(projects);
+			projects = _filterProjects(filterFunctions, projects);
+			return Object.assign({}, state, {
+				isFetching: false,
+				didInvalidate: false,
+				projects: projects,
+				languages: languageColorMap,
+				lastUpdated: action.receivedAt,
+				filterFunctions: filterFunctions
+			});
+		default:
+			return state;
+	}
+}
+
 function projectsForName() {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	var action = arguments[1];
 
+	0;
 	0;
 	switch (action.type) {
 		case _projectsActions.RECEIVE_PROJECTS:
 		case _projectsActions.REQUEST_PROJECTS:
 			var dataToReturn = Object.assign({}, state, { projects: projectsFn(state.profileName, action) });
 			return dataToReturn;
+		case _projectsActions.REQUEST_FILTER:
+		case _projectsActions.RECEIVE_FILTER:
+			return Object.assign({}, state, { projects: filterFn(state.projects, action) });
+			break;
 		default:
 			return state;
 	}

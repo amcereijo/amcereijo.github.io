@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import { fetchProfileIfNeeded } from '../actions/profileActions';
-import { fetchProjectsIfNeeded } from '../actions/projectsActions';
+import { fetchProjectsIfNeeded, filterFunction } from '../actions/projectsActions';
 import { fetchReadmeIfNeeded } from '../actions/readmeActions';
 
 import Header from '../components/Header';
@@ -36,10 +36,20 @@ class GithubApp extends Component {
 	}
 
 	render() {
-		const filterFunction = (evt) => {
-			console.log('Event:', evt.target.value);
+		const {dispatch, profileName, data, isFetching, lastUpdated, projects, languages, readme } = this.props;
+		const filterFunctionEvent = (evt) => {
+			const hasEvent = () => evt && evt.target && evt.keyCode;
+			const isValidKey = () => (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode))) ||
+				[8,46,32].indexOf(evt.keyCode) >= 0;
+			
+			if(hasEvent() && isValidKey()) {
+				const filterValue = evt.target.value;
+				console.log('Event:', filterValue);
+				dispatch(filterFunction('inputFilter', (actualProjectName) => {
+					return (actualProjectName && actualProjectName.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
+				}, evt.target.value ? true : false));
+			}
 		};
-		const { profileName, data, isFetching, lastUpdated, projects, languages, readme } = this.props;
 		console.log('Render languages: ', languages);
 		console.log('Render data: ', data);
 		return (
@@ -50,7 +60,7 @@ class GithubApp extends Component {
 				  html_url = {data.html_url || ''}
 				  email = {data.email || ''}
 				  location = {data.location || ''} />
-				<Nav languages={languages} filterFunction={filterFunction} />
+				<Nav languages={languages} filterFunction={filterFunctionEvent} />
 				<ProjectList projects={projects} readme={readme} onExpandCollapsProject={this.clickExpandCollapsProject.bind(this)}/>
 				<Footer />
 			</div>

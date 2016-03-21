@@ -1,4 +1,4 @@
-import { REQUEST_PROJECTS, RECEIVE_PROJECTS } from '../actions/projectsActions';
+import { REQUEST_PROJECTS, RECEIVE_PROJECTS, REQUEST_FILTER, RECEIVE_FILTER } from '../actions/projectsActions';
 const languageColorMap = [];
 const colors = [];
 
@@ -16,20 +16,24 @@ function _generateNewColor() {
 
 function _fillColors(projects) {
 	const languageColors = {};
-	return projects.map((project) => {
-		let color;
-		const language = project.language || 'other';
-		if(languageColors[language]) {
-			project.languageColor = languageColors[language];
-		} else {
-			color = _generateNewColor();
-	    colors.push(color);
-	    languageColors[language] = color;
-	    languageColorMap.push({name: language, color: color});
-	    project.languageColor = color;
-		}
-		return project;
-	});
+	if(!languageColorMap || languageColorMap.length === 0 ) {
+		return projects.map((project) => {
+			let color;
+			const language = project.language || 'other';
+			if(languageColors[language]) {
+				project.languageColor = languageColors[language];
+			} else {
+				color = _generateNewColor();
+		    colors.push(color);
+		    languageColors[language] = color;
+		    languageColorMap.push({name: language, color: color});
+		    project.languageColor = color;
+			}
+			return project;
+		});
+	} else {
+		return projects;
+	}
 }
 
 function _mapDates(projects) {
@@ -42,20 +46,15 @@ function _mapDates(projects) {
 
 function _filterProjects(filterFunctions, projects){
 	for(const key in filterFunctions) {
-		if(filterFunctions.hasOwnFunctions(key) &&
-				typeof filterFunctions[key] === 'function') {
-			projects.filter((project) => {
-				return filterFunctions[key](project.name);
+		console.log()
+		if(filterFunctions.hasOwnProperty(key) && typeof filterFunctions[key] === 'function') {
+			projects = projects.map((project) => {
+				const result = filterFunctions[key](project.name);
+				project.isVisible = result;
+				return project;
 			});
 		}
 	}
-	// if(filterFunctions.length) {
-	// 	filterFunctions.forEach((filterFunction) => {
-	// 		if(typeof filterFunction === 'function') {
-	// 			projects = filterFunction(projects);
-	// 		}
-	// 	})
-	// }
 	return projects;
 }
 
@@ -63,7 +62,7 @@ function projectsFn(state = {
 	isFetching: false,
 	didInvalidate: false,
 	projects: [],
-	filterFunctions: [],
+	filterFunctions: {},
 	languages: []
 
 }, action) {
@@ -91,14 +90,54 @@ function projectsFn(state = {
 	}
 }
 
+function filterFn(state = {
+	isFetching: false,
+	didInvalidate: false,
+	projects: [],
+	filterFunctions: {},
+	languages: []
+
+}, action) {
+	console.log('filterFn: ', state);
+	const filterFunctions = action.filterFunctions;
+	switch(action.type) {
+		case REQUEST_FILTER:
+			return Object.assign({}, state, {
+				isFetching: true,
+				didInvalidate: false,
+				filterFunctions: filterFunctions,
+			});
+		case RECEIVE_FILTER:
+			let projects = _mapDates(state.projects);
+			projects = _fillColors(projects);
+			projects = _filterProjects(filterFunctions, projects);
+			return Object.assign({}, state, {
+				isFetching: false,
+				didInvalidate: false,
+				projects: projects,
+				languages: languageColorMap,
+				lastUpdated: action.receivedAt,
+				filterFunctions: filterFunctions,
+			});
+		default:
+			return state;
+	}
+}
+
 function projectsForName(state = {}, action) {
 	console.log('action:: ', action);
+	console.log('state:', state);
 	switch(action.type) {
 		case RECEIVE_PROJECTS:
 		case REQUEST_PROJECTS:
 			const dataToReturn = Object.assign({}, state,
 				{ projects : projectsFn(state.profileName, action) })
 			return dataToReturn;
+		case REQUEST_FILTER:
+		case RECEIVE_FILTER:
+			return Object.assign({}, state,
+				{ projects : filterFn(state.projects, action) })
+			break;
 		default:
 			return state;
 	}
