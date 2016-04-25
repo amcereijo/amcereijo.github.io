@@ -24,7 +24,7 @@ function requestProfile(profileName) {
 }
 
 function receiveProfile(profileName, json) {
-  0;
+  console.log('JSON: ', json);
   return {
     type: RECEIVE_PROFILE,
     profileName: profileName,
@@ -92,7 +92,7 @@ function requestProjects(profileName) {
 }
 
 function receiveProjects(profileName, json) {
-  0;
+  console.log('JSON PROJECTS: ', json);
   return {
     type: RECEIVE_PROJECTS,
     profileName: profileName,
@@ -191,7 +191,7 @@ function requestReadme(projectName) {
 }
 
 function receivePeadme(projectName, json) {
-  0;
+  console.log('JSON PROJECTS: ', json);
   return {
     type: RECEIVE_README,
     projectName: projectName,
@@ -317,9 +317,9 @@ var Header = function (_Component) {
 	_createClass(Header, [{
 		key: 'render',
 		value: function render() {
-			0;
-			0;
-			0;
+			console.log('Header render this.props: ', this.props);
+			console.log('Header render this.props.email: ', this.props.email);
+			console.log('Header render this.props.location: ', this.props.location);
 			return _react2.default.createElement(
 				'header',
 				{ className: 'container headerElement' },
@@ -433,16 +433,17 @@ var Nav = function (_Component) {
 	}
 
 	_createClass(Nav, [{
-		key: 'onClick',
-		value: function onClick(value) {
-			0;
-		}
-	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
+			var disbleButtonClass = 'languageBtn btn btn-default disabled';
+			var buttonClass = 'languageBtn btn btn-default';
 			var languages = this.props.languages || [];
+
+			var onClickFunction = this.props.filterLanguageFunction;
+
+			console.log(' => NAV -> selectedLanguage: ', this.props.selectedLanguage);
 			return _react2.default.createElement(
 				'nav',
 				{ className: 'container' },
@@ -454,15 +455,16 @@ var Nav = function (_Component) {
 						{ id: 'laguages' },
 						_react2.default.createElement(
 							'span',
-							{ onClick: this.onClick.bind(this, ''), className: 'languageBtn btn btn-default disabled' },
+							{ onClick: onClickFunction.bind(null, ''),
+								className: this.props.selectedLanguage === 'All' ? disbleButtonClass : buttonClass },
 							'All'
 						),
 						languages.map(function (language, i) {
 							return _react2.default.createElement(
 								'span',
-								{ onClick: _this2.onClick.bind(_this2, language.name),
+								{ onClick: onClickFunction.bind(null, language.name),
 									key: language.name,
-									className: 'languageBtn btn btn-default',
+									className: _this2.props.selectedLanguage === language.name ? disbleButtonClass : buttonClass,
 									style: { backgroundColor: language.color },
 									'data-language': language.name },
 								language.name
@@ -483,7 +485,9 @@ exports.default = Nav;
 
 Nav.propTypes = {
 	languages: _react.PropTypes.arrayOf(_react.PropTypes.object.isRequired).isRequired,
-	filterFunction: _react.PropTypes.func.isRequired
+	filterFunction: _react.PropTypes.func.isRequired,
+	filterLanguageFunction: _react.PropTypes.func.isRequired,
+	selectedLanguage: _react.PropTypes.string.isRequired
 };
 
 },{"./inputFilter":12,"react":187}],7:[function(require,module,exports){
@@ -534,7 +538,7 @@ var Project = function (_Component) {
 	_createClass(Project, [{
 		key: 'clickExpand',
 		value: function clickExpand() {
-			0;
+			console.log('projectName: ', this.props.project.name);
 			this.setState({ expanded: !this.state.expanded });
 			this.props.onExpandCollapsProject(this.props.project.name);
 		}
@@ -754,9 +758,9 @@ var ProjectList = function (_Component) {
 			var _this2 = this;
 
 			var readme = this.props.readme || {};
-			0;
+			console.log('ProjectList - this.props.projects: ', this.props.projects);
 			var projects = this.props.projects || [];
-			0;
+			console.log('ProjectList - readme: ', readme);
 			return _react2.default.createElement(
 				'main',
 				{ id: 'main', className: 'container' },
@@ -961,7 +965,10 @@ var GithubApp = function (_Component) {
 	function GithubApp(props) {
 		_classCallCheck(this, GithubApp);
 
-		return _possibleConstructorReturn(this, Object.getPrototypeOf(GithubApp).call(this, props));
+		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(GithubApp).call(this, props));
+
+		_this.state = { selectedLanguage: 'All' };
+		return _this;
 	}
 
 	_createClass(GithubApp, [{
@@ -993,6 +1000,8 @@ var GithubApp = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
+			var _this2 = this;
+
 			var _props = this.props;
 			var dispatch = _props.dispatch;
 			var profileName = _props.profileName;
@@ -1002,6 +1011,9 @@ var GithubApp = function (_Component) {
 			var projects = _props.projects;
 			var languages = _props.languages;
 			var readme = _props.readme;
+
+
+			console.log('=> state.selectedLanguage: ', this.state.selectedLanguage);
 
 			var filterFunctionEvent = function filterFunctionEvent(evt) {
 				var hasEvent = function hasEvent() {
@@ -1015,15 +1027,27 @@ var GithubApp = function (_Component) {
 				if (hasEvent() && isValidKey()) {
 					(function () {
 						var filterValue = evt.target.value;
-						0;
-						dispatch((0, _projectsActions.filterFunction)('inputFilter', function (actualProjectName) {
-							return actualProjectName && actualProjectName.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0;
+						console.log('Event:', filterValue);
+						dispatch((0, _projectsActions.filterFunction)('inputFilter', function (actualProject) {
+							console.log('actualProject: ', actualProject);
+							return actualProject.name && actualProject.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0;
 						}, evt.target.value ? true : false));
 					})();
 				}
 			};
-			0;
-			0;
+
+			var filterFuntionLanguage = function filterFuntionLanguage(language) {
+				console.log('selected language to filter: ', language);
+				_this2.setState({ selectedLanguage: language || 'All' });
+				dispatch((0, _projectsActions.filterFunction)('languageFilter', function (actualProject) {
+
+					var actualProjectLanguaje = actualProject && actualProject.language && actualProject.language.toLowerCase() || 'Other';
+					return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
+				}, true));
+			};
+
+			console.log('Render languages: ', languages);
+			console.log('Render data: ', data);
 			return _react2.default.createElement(
 				'div',
 				null,
@@ -1033,7 +1057,10 @@ var GithubApp = function (_Component) {
 					html_url: data.html_url || '',
 					email: data.email || '',
 					location: data.location || '' }),
-				_react2.default.createElement(_Nav2.default, { languages: languages, filterFunction: filterFunctionEvent }),
+				_react2.default.createElement(_Nav2.default, { languages: languages,
+					filterFunction: filterFunctionEvent,
+					filterLanguageFunction: filterFuntionLanguage,
+					selectedLanguage: this.state.selectedLanguage }),
 				_react2.default.createElement(_ProjectList2.default, { projects: projects, readme: readme, onExpandCollapsProject: this.clickExpandCollapsProject.bind(this) }),
 				_react2.default.createElement(_Footer2.default, null)
 			);
@@ -1055,8 +1082,9 @@ function mapStateToProps(state) {
 	var profileForName = state.profileForName;
 	var projectsForName = state.projectsForName;
 	var readmeForProject = state.readmeForProject;
+	var selectedLanguage = state.selectedLanguage;
 
-	0;
+	console.log('====> profileForName: ', profileForName);
 
 	var _ref = profileForName.profile || {
 		isFetching: true,
@@ -1074,7 +1102,7 @@ function mapStateToProps(state) {
 	var lastUpdated = _ref.lastUpdated;
 	var data = _ref.data;
 
-	0;
+	console.log('====> projectsForName: ', projectsForName);
 
 	var _ref2 = projectsForName.projects || {
 		projects: [], languages: []
@@ -2990,7 +3018,7 @@ function warnAboutReceivingStore() {
 
   /* eslint-disable no-console */
   if (typeof console !== 'undefined' && typeof console.error === 'function') {
-    0;
+    console.error('<Provider> does not support changing `store` on the fly. ' + 'It is most likely that you see this error because you updated to ' + 'Redux 2.x and React Redux 2.x which no longer hot reload reducers ' + 'automatically. See https://github.com/rackt/react-redux/releases/' + 'tag/v2.0.0 for the migration instructions.');
   }
   /* eslint-disable no-console */
 }
@@ -5564,7 +5592,7 @@ var Danger = {
           // we're done.
           resultListAssignmentCount += 1;
         } else if (process.env.NODE_ENV !== 'production') {
-          0;
+          console.error('Danger: Discarding unexpected node:', renderNode);
         }
       }
     }
@@ -9835,7 +9863,7 @@ if (process.env.NODE_ENV !== 'production') {
     if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ === 'undefined') {
       // If we're in Chrome or Firefox, provide a download link if not installed.
       if (navigator.userAgent.indexOf('Chrome') > -1 && navigator.userAgent.indexOf('Edge') === -1 || navigator.userAgent.indexOf('Firefox') > -1) {
-        0;
+        console.debug('Download the React DevTools for a better development experience: ' + 'https://fb.me/react-devtools');
       }
     }
 
@@ -9854,7 +9882,7 @@ if (process.env.NODE_ENV !== 'production') {
 
     for (var i = 0; i < expectedFeatures.length; i++) {
       if (!expectedFeatures[i]) {
-        0;
+        console.error('One or more ES5 shim/shams expected by React are not available: ' + 'https://fb.me/react-warning-polyfills');
         break;
       }
     }
@@ -12323,7 +12351,7 @@ var ReactDefaultPerf = {
   printExclusive: function (measurements) {
     measurements = measurements || ReactDefaultPerf._allMeasurements;
     var summary = ReactDefaultPerfAnalysis.getExclusiveSummary(measurements);
-    (summary.map(function (item) {
+    console.table(summary.map(function (item) {
       return {
         'Component class name': item.componentName,
         'Total inclusive time (ms)': roundFloat(item.inclusive),
@@ -12333,7 +12361,7 @@ var ReactDefaultPerf = {
         'Render time per instance (ms)': roundFloat(item.render / item.count),
         'Instances': item.count
       };
-    }) && 0);
+    }));
     // TODO: ReactDefaultPerfAnalysis.getTotalTime() does not return the correct
     // number.
   },
@@ -12341,14 +12369,14 @@ var ReactDefaultPerf = {
   printInclusive: function (measurements) {
     measurements = measurements || ReactDefaultPerf._allMeasurements;
     var summary = ReactDefaultPerfAnalysis.getInclusiveSummary(measurements);
-    (summary.map(function (item) {
+    console.table(summary.map(function (item) {
       return {
         'Owner > component': item.componentName,
         'Inclusive time (ms)': roundFloat(item.time),
         'Instances': item.count
       };
-    }) && 0);
-    (ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) && 0);
+    }));
+    console.log('Total time:', ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) + ' ms');
   },
 
   getMeasurementsSummaryMap: function (measurements) {
@@ -12364,21 +12392,21 @@ var ReactDefaultPerf = {
 
   printWasted: function (measurements) {
     measurements = measurements || ReactDefaultPerf._allMeasurements;
-    (ReactDefaultPerf.getMeasurementsSummaryMap(measurements) && 0);
-    (ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) && 0);
+    console.table(ReactDefaultPerf.getMeasurementsSummaryMap(measurements));
+    console.log('Total time:', ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) + ' ms');
   },
 
   printDOM: function (measurements) {
     measurements = measurements || ReactDefaultPerf._allMeasurements;
     var summary = ReactDefaultPerfAnalysis.getDOMSummary(measurements);
-    (summary.map(function (item) {
+    console.table(summary.map(function (item) {
       var result = {};
       result[DOMProperty.ID_ATTRIBUTE_NAME] = item.id;
       result.type = item.type;
       result.args = JSON.stringify(item.args);
       return result;
-    }) && 0);
-    (ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) && 0);
+    }));
+    console.log('Total time:', ReactDefaultPerfAnalysis.getTotalTime(measurements).toFixed(2) + ' ms');
   },
 
   _recordWrite: function (id, fnName, totalTime, args) {
@@ -21392,7 +21420,7 @@ var EventListener = {
       };
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        0;
+        console.error('Attempted to listen to events during the capture phase on a ' + 'browser that does not support the capture phase. Your application ' + 'will not receive some events.');
       }
       return {
         remove: emptyFunction
@@ -22571,7 +22599,7 @@ if (process.env.NODE_ENV !== 'production') {
         return args[argIndex++];
       });
       if (typeof console !== 'undefined') {
-        0;
+        console.error(message);
       }
       try {
         // --- Welcome to debugging React ---
@@ -22684,7 +22712,7 @@ function createLogger() {
   }
 
   if (transformer) {
-    0;
+    console.error("Option 'transformer' is deprecated, use stateTransformer instead");
   }
 
   var logBuffer = [];
@@ -23349,7 +23377,7 @@ exports["default"] = warning;
 function warning(message) {
   /* eslint-disable no-console */
   if (typeof console !== 'undefined' && typeof console.error === 'function') {
-    0;
+    console.error(message);
   }
   /* eslint-enable no-console */
   try {
@@ -23405,7 +23433,7 @@ function profileForName() {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	var action = arguments[1];
 
-	0;
+	console.log('action:: ', action);
 	switch (action.type) {
 		case _profileActions.RECEIVE_PROFILE:
 		case _profileActions.REQUEST_PROFILE:
@@ -23474,10 +23502,10 @@ function _mapDates(projects) {
 
 function _filterProjects(filterFunctions, projects) {
 	var _loop = function _loop(key) {
-		0;
+		console.log();
 		if (filterFunctions.hasOwnProperty(key) && typeof filterFunctions[key] === 'function') {
 			projects = projects.map(function (project) {
-				var result = filterFunctions[key](project.name);
+				var result = filterFunctions[key](project);
 				project.isVisible = result;
 				return project;
 			});
@@ -23501,7 +23529,7 @@ function projectsFn() {
 	} : arguments[0];
 	var action = arguments[1];
 
-	0;
+	console.log('projectsFn: ', state);
 	var filterFunctions = state.filterFunctions;
 	switch (action.type) {
 		case _projectsActions.REQUEST_PROJECTS:
@@ -23536,7 +23564,7 @@ function filterFn() {
 	} : arguments[0];
 	var action = arguments[1];
 
-	0;
+	console.log('filterFn: ', state);
 	var filterFunctions = action.filterFunctions;
 	switch (action.type) {
 		case _projectsActions.REQUEST_FILTER:
@@ -23566,8 +23594,8 @@ function projectsForName() {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	var action = arguments[1];
 
-	0;
-	0;
+	console.log('action:: ', action);
+	console.log('state:', state);
 	switch (action.type) {
 		case _projectsActions.RECEIVE_PROJECTS:
 		case _projectsActions.REQUEST_PROJECTS:
@@ -23625,7 +23653,7 @@ function readmeForProject() {
 	var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	var action = arguments[1];
 
-	0;
+	console.log('action:: ', action);
 	switch (action.type) {
 		case _readmeActions.RECEIVE_README:
 		case _readmeActions.REQUEST_README:
