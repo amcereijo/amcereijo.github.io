@@ -2,22 +2,26 @@ import React, { Component, PropTypes } from 'react';
 import InputFilter from './inputFilter';
 
 export default class Nav extends Component {
-	onClick(value) {
-		console.log('Selected: ', value);
-	}
 
 	render() {
+		const disbleButtonClass = 'languageBtn btn btn-default disabled';
+		const buttonClass = 'languageBtn btn btn-default';
 		const languages = this.props.languages || [];
+
+		const onClickFunction = this.props.filterLanguageFunction;
+
+		console.log(' => NAV -> selectedLanguage: ', this.props.selectedLanguage);
 		return (
 		<nav className="container">
 			<p className="text-left">
 				<span id="laguages">
-					<span onClick={this.onClick.bind(this, '')} className="languageBtn btn btn-default disabled">All</span>
+					<span onClick={onClickFunction.bind(null, '')}
+						className={this.props.selectedLanguage === 'All' ? disbleButtonClass:buttonClass}>All</span>
 
 					{languages.map((language, i) =>
-	          <span onClick={this.onClick.bind(this, language.name)}
+	          <span onClick={onClickFunction.bind(null, language.name)}
 	          	key={language.name}
-	          	className="languageBtn btn btn-default"
+	          	className={this.props.selectedLanguage === language.name ? disbleButtonClass:buttonClass}
 	          	style={{backgroundColor: language.color }}
 	          	data-language={language.name}>
 	          		{language.name}
@@ -36,4 +40,6 @@ Nav.propTypes = {
 			PropTypes.object.isRequired
 		).isRequired,
   filterFunction: PropTypes.func.isRequired,
+  filterLanguageFunction: PropTypes.func.isRequired,
+  selectedLanguage: PropTypes.string.isRequired,
 };

@@ -49,7 +49,7 @@ function _filterProjects(filterFunctions, projects){
 		console.log()
 		if(filterFunctions.hasOwnProperty(key) && typeof filterFunctions[key] === 'function') {
 			projects = projects.map((project) => {
-				const result = filterFunctions[key](project.name);
+				const result = filterFunctions[key](project);
 				project.isVisible = result;
 				return project;
 			});
@@ -63,7 +63,7 @@ function projectsFn(state = {
 	didInvalidate: false,
 	projects: [],
 	filterFunctions: {},
-	languages: []
+	languages: [],
 
 }, action) {
 	console.log('projectsFn: ', state);
@@ -95,7 +95,7 @@ function filterFn(state = {
 	didInvalidate: false,
 	projects: [],
 	filterFunctions: {},
-	languages: []
+	languages: [],
 
 }, action) {
 	console.log('filterFn: ', state);

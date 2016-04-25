@@ -14,6 +14,7 @@ class GithubApp extends Component {
 
 	constructor(props) {
 		super(props);
+		this.state = { selectedLanguage: 'All' } ;
 	}
 
 	componentDidMount() {
@@ -36,20 +37,37 @@ class GithubApp extends Component {
 	}
 
 	render() {
-		const {dispatch, profileName, data, isFetching, lastUpdated, projects, languages, readme } = this.props;
+		const {dispatch, profileName, data, isFetching,
+			lastUpdated, projects, languages, readme} = this.props;
+
+		console.log('=> state.selectedLanguage: ', this.state.selectedLanguage);
+
 		const filterFunctionEvent = (evt) => {
 			const hasEvent = () => evt && evt.target && evt.keyCode;
 			const isValidKey = () => (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode))) ||
 				[8,46,32].indexOf(evt.keyCode) >= 0;
-			
+
 			if(hasEvent() && isValidKey()) {
 				const filterValue = evt.target.value;
 				console.log('Event:', filterValue);
-				dispatch(filterFunction('inputFilter', (actualProjectName) => {
-					return (actualProjectName && actualProjectName.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
+				dispatch(filterFunction('inputFilter', (actualProject) => {
+					console.log('actualProject: ', actualProject);
+					return (actualProject.name && actualProject.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
 				}, evt.target.value ? true : false));
 			}
 		};
+
+		const filterFuntionLanguage = (language) => {
+			console.log('selected language to filter: ', language);
+			this.setState({ selectedLanguage: language || 'All' });
+			dispatch(filterFunction('languageFilter', (actualProject) => {
+
+				const actualProjectLanguaje = (actualProject && actualProject.language && actualProject.language.toLowerCase()) || 'Other' ;
+				return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
+			}, true));
+
+		};
+
 		console.log('Render languages: ', languages);
 		console.log('Render data: ', data);
 		return (
@@ -60,7 +78,10 @@ class GithubApp extends Component {
 				  html_url = {data.html_url || ''}
 				  email = {data.email || ''}
 				  location = {data.location || ''} />
-				<Nav languages={languages} filterFunction={filterFunctionEvent} />
+				<Nav languages = {languages}
+					filterFunction = {filterFunctionEvent}
+					filterLanguageFunction = {filterFuntionLanguage}
+					selectedLanguage = {this.state.selectedLanguage}/>
 				<ProjectList projects={projects} readme={readme} onExpandCollapsProject={this.clickExpandCollapsProject.bind(this)}/>
 				<Footer />
 			</div>
@@ -77,8 +98,9 @@ GithubApp.propTypes = {
 };
 
 
+
 function mapStateToProps(state) {
-	const { profileForName, projectsForName, readmeForProject } = state;
+	const { profileForName, projectsForName, readmeForProject, selectedLanguage } = state;
 	console.log('====> profileForName: ', profileForName);
 	const {
 		isFetching,
@@ -115,6 +137,7 @@ function mapStateToProps(state) {
 		lastUpdated,
 	};
 }
+
 
 export default connect(mapStateToProps)(GithubApp);
 
