@@ -9,7 +9,7 @@ export default class ProjectDescription extends Component {
 				 	<dt>Repo Url</dt>
 					<dd><a href={this.props.project.html_url}>{this.props.project.html_url}</a></dd>
 					<dt>Last update</dt>
-					<dd>{this.props.project.updated_at}</dd>
+					<dd>{this.props.project.updated_at_formated}</dd>
 				</dl>
 			</div>
 		);

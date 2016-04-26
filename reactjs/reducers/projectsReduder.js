@@ -37,9 +37,13 @@ function _fillColors(projects) {
 }
 
 function _mapDates(projects) {
+	const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
+		'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 	return projects.map((project) => {
-		const d = new Date(project.updated_at);
-		project.updated_at = d.toLocaleDateString() + ' at ' + d.toLocaleTimeString();
+		if(!project.updated_at_formated) {
+			const d = new Date(project.updated_at);
+			project.updated_at_formated = `${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()} at ${d.toLocaleTimeString()}`;
+		}
 		return project;
 	});
 }
