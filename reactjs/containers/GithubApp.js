@@ -14,7 +14,7 @@ class GithubApp extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = { selectedLanguage: 'All' } ;
+		this.state = { selectedLanguage: 'All' };
 	}
 
 	componentDidMount() {
@@ -36,40 +36,48 @@ class GithubApp extends Component {
 		dispatch(fetchReadmeIfNeeded(this.props.profileName, projectName));
 	}
 
+
+	filterFuntionLanguage(language) {
+		const { dispatch } = this.props;
+		this.setState({ selectedLanguage: language || 'All' });
+
+		console.log('selected language to filter: ', language);
+
+		dispatch(filterFunction('languageFilter', (actualProject) => {
+			const actualProjectLanguaje = (actualProject && actualProject.language && actualProject.language.toLowerCase()) || 'Other' ;
+			return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
+		}, true));
+	}
+
+	filterFunctionEvent(evt) {
+		const { dispatch } = this.props;
+		const hasEvent = () => evt && evt.target && evt.keyCode;
+		const isValidKey = () => (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode))) ||
+			[8,46,32].indexOf(evt.keyCode) >= 0;
+
+		if(hasEvent() && isValidKey()) {
+			const filterValue = evt.target.value;
+			console.log('Event:', filterValue);
+
+			dispatch(filterFunction('inputFilter', (actualProject) => {
+				console.log('actualProject: ', actualProject);
+				return (actualProject.name && actualProject.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
+			}, evt.target.value ? true : false));
+		}
+	}
+
 	render() {
 		const {dispatch, profileName, data, isFetching,
 			lastUpdated, projects, languages, readme} = this.props;
 
 		console.log('=> state.selectedLanguage: ', this.state.selectedLanguage);
 
-		const filterFunctionEvent = (evt) => {
-			const hasEvent = () => evt && evt.target && evt.keyCode;
-			const isValidKey = () => (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode))) ||
-				[8,46,32].indexOf(evt.keyCode) >= 0;
-
-			if(hasEvent() && isValidKey()) {
-				const filterValue = evt.target.value;
-				console.log('Event:', filterValue);
-				dispatch(filterFunction('inputFilter', (actualProject) => {
-					console.log('actualProject: ', actualProject);
-					return (actualProject.name && actualProject.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
-				}, evt.target.value ? true : false));
-			}
-		};
-
-		const filterFuntionLanguage = (language) => {
-			console.log('selected language to filter: ', language);
-			this.setState({ selectedLanguage: language || 'All' });
-			dispatch(filterFunction('languageFilter', (actualProject) => {
-
-				const actualProjectLanguaje = (actualProject && actualProject.language && actualProject.language.toLowerCase()) || 'Other' ;
-				return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
-			}, true));
-
-		};
+		this.filterFunctionEvent = this.filterFunctionEvent.bind(this);
+		this.filterFuntionLanguage = this.filterFuntionLanguage.bind(this);
 
 		console.log('Render languages: ', languages);
 		console.log('Render data: ', data);
+
 		return (
 			<div>
 				<Header name = {data.name || ''}
@@ -79,8 +87,8 @@ class GithubApp extends Component {
 				  email = {data.email || ''}
 				  location = {data.location || ''} />
 				<Nav languages = {languages}
-					filterFunction = {filterFunctionEvent}
-					filterLanguageFunction = {filterFuntionLanguage}
+					filterFunction = {this.filterFunctionEvent}
+					filterLanguageFunction = {this.filterFuntionLanguage}
 					selectedLanguage = {this.state.selectedLanguage}/>
 				<ProjectList projects={projects} readme={readme} onExpandCollapsProject={this.clickExpandCollapsProject.bind(this)}/>
 				<Footer />

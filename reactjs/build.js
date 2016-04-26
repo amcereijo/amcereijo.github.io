@@ -433,6 +433,12 @@ var Nav = function (_Component) {
 	}
 
 	_createClass(Nav, [{
+		key: 'onClickElement',
+		value: function onClickElement(evt) {
+			var language = evt.target.getAttribute('data-language');
+			this.props.filterLanguageFunction(language);
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
@@ -441,7 +447,7 @@ var Nav = function (_Component) {
 			var buttonClass = 'languageBtn btn btn-default';
 			var languages = this.props.languages || [];
 
-			var onClickFunction = this.props.filterLanguageFunction;
+			//const onClickFunction = this.props.filterLanguageFunction;
 
 			console.log(' => NAV -> selectedLanguage: ', this.props.selectedLanguage);
 			return _react2.default.createElement(
@@ -455,14 +461,14 @@ var Nav = function (_Component) {
 						{ id: 'laguages' },
 						_react2.default.createElement(
 							'span',
-							{ onClick: onClickFunction.bind(null, ''),
+							{ onClick: this.onClickElement.bind(this), 'data-language': '',
 								className: this.props.selectedLanguage === 'All' ? disbleButtonClass : buttonClass },
 							'All'
 						),
 						languages.map(function (language, i) {
 							return _react2.default.createElement(
 								'span',
-								{ onClick: onClickFunction.bind(null, language.name),
+								{ onClick: _this2.onClickElement.bind(_this2),
 									key: language.name,
 									className: _this2.props.selectedLanguage === language.name ? disbleButtonClass : buttonClass,
 									style: { backgroundColor: language.color },
@@ -998,10 +1004,47 @@ var GithubApp = function (_Component) {
 			dispatch((0, _readmeActions.fetchReadmeIfNeeded)(this.props.profileName, projectName));
 		}
 	}, {
+		key: 'filterFuntionLanguage',
+		value: function filterFuntionLanguage(language) {
+			var dispatch = this.props.dispatch;
+
+			this.setState({ selectedLanguage: language || 'All' });
+
+			console.log('selected language to filter: ', language);
+
+			dispatch((0, _projectsActions.filterFunction)('languageFilter', function (actualProject) {
+				var actualProjectLanguaje = actualProject && actualProject.language && actualProject.language.toLowerCase() || 'Other';
+				return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
+			}, true));
+		}
+	}, {
+		key: 'filterFunctionEvent',
+		value: function filterFunctionEvent(evt) {
+			var dispatch = this.props.dispatch;
+
+			var hasEvent = function hasEvent() {
+				return evt && evt.target && evt.keyCode;
+			};
+			var isValidKey = function isValidKey() {
+				return (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode)) || [8, 46, 32].indexOf(evt.keyCode) >= 0
+				);
+			};
+
+			if (hasEvent() && isValidKey()) {
+				(function () {
+					var filterValue = evt.target.value;
+					console.log('Event:', filterValue);
+
+					dispatch((0, _projectsActions.filterFunction)('inputFilter', function (actualProject) {
+						console.log('actualProject: ', actualProject);
+						return actualProject.name && actualProject.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0;
+					}, evt.target.value ? true : false));
+				})();
+			}
+		}
+	}, {
 		key: 'render',
 		value: function render() {
-			var _this2 = this;
-
 			var _props = this.props;
 			var dispatch = _props.dispatch;
 			var profileName = _props.profileName;
@@ -1015,39 +1058,12 @@ var GithubApp = function (_Component) {
 
 			console.log('=> state.selectedLanguage: ', this.state.selectedLanguage);
 
-			var filterFunctionEvent = function filterFunctionEvent(evt) {
-				var hasEvent = function hasEvent() {
-					return evt && evt.target && evt.keyCode;
-				};
-				var isValidKey = function isValidKey() {
-					return (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode)) || [8, 46, 32].indexOf(evt.keyCode) >= 0
-					);
-				};
-
-				if (hasEvent() && isValidKey()) {
-					(function () {
-						var filterValue = evt.target.value;
-						console.log('Event:', filterValue);
-						dispatch((0, _projectsActions.filterFunction)('inputFilter', function (actualProject) {
-							console.log('actualProject: ', actualProject);
-							return actualProject.name && actualProject.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0;
-						}, evt.target.value ? true : false));
-					})();
-				}
-			};
-
-			var filterFuntionLanguage = function filterFuntionLanguage(language) {
-				console.log('selected language to filter: ', language);
-				_this2.setState({ selectedLanguage: language || 'All' });
-				dispatch((0, _projectsActions.filterFunction)('languageFilter', function (actualProject) {
-
-					var actualProjectLanguaje = actualProject && actualProject.language && actualProject.language.toLowerCase() || 'Other';
-					return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
-				}, true));
-			};
+			this.filterFunctionEvent = this.filterFunctionEvent.bind(this);
+			this.filterFuntionLanguage = this.filterFuntionLanguage.bind(this);
 
 			console.log('Render languages: ', languages);
 			console.log('Render data: ', data);
+
 			return _react2.default.createElement(
 				'div',
 				null,
@@ -1058,8 +1074,8 @@ var GithubApp = function (_Component) {
 					email: data.email || '',
 					location: data.location || '' }),
 				_react2.default.createElement(_Nav2.default, { languages: languages,
-					filterFunction: filterFunctionEvent,
-					filterLanguageFunction: filterFuntionLanguage,
+					filterFunction: this.filterFunctionEvent,
+					filterLanguageFunction: this.filterFuntionLanguage,
 					selectedLanguage: this.state.selectedLanguage }),
 				_react2.default.createElement(_ProjectList2.default, { projects: projects, readme: readme, onExpandCollapsProject: this.clickExpandCollapsProject.bind(this) }),
 				_react2.default.createElement(_Footer2.default, null)

@@ -3,23 +3,28 @@ import InputFilter from './inputFilter';
 
 export default class Nav extends Component {
 
+	onClickElement(evt) {
+		const language = evt.target.getAttribute('data-language');
+		this.props.filterLanguageFunction(language);
+	}
+
 	render() {
 		const disbleButtonClass = 'languageBtn btn btn-default disabled';
 		const buttonClass = 'languageBtn btn btn-default';
 		const languages = this.props.languages || [];
 
-		const onClickFunction = this.props.filterLanguageFunction;
+		//const onClickFunction = this.props.filterLanguageFunction;
 
 		console.log(' => NAV -> selectedLanguage: ', this.props.selectedLanguage);
 		return (
 		<nav className="container">
 			<p className="text-left">
 				<span id="laguages">
-					<span onClick={onClickFunction.bind(null, '')}
+					<span onClick={this.onClickElement.bind(this)} data-language=''
 						className={this.props.selectedLanguage === 'All' ? disbleButtonClass:buttonClass}>All</span>
 
 					{languages.map((language, i) =>
-	          <span onClick={onClickFunction.bind(null, language.name)}
+	          <span onClick={this.onClickElement.bind(this)}
 	          	key={language.name}
 	          	className={this.props.selectedLanguage === language.name ? disbleButtonClass:buttonClass}
 	          	style={{backgroundColor: language.color }}
