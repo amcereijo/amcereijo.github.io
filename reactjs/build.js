@@ -261,6 +261,11 @@ var Header = function (_Component) {
 	}
 
 	_createClass(Header, [{
+		key: "shouldComponentUpdate",
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props;
+		}
+	}, {
 		key: "render",
 		value: function render() {
 			return _react2.default.createElement(
@@ -315,6 +320,11 @@ var Header = function (_Component) {
 	}
 
 	_createClass(Header, [{
+		key: 'shouldComponentUpdate',
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props;
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			console.log('Header render this.props: ', this.props);
@@ -433,6 +443,11 @@ var Nav = function (_Component) {
 	}
 
 	_createClass(Nav, [{
+		key: 'shouldComponentUpdate',
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props;
+		}
+	}, {
 		key: 'onClickElement',
 		value: function onClickElement(evt) {
 			var language = evt.target.getAttribute('data-language');
@@ -542,6 +557,11 @@ var Project = function (_Component) {
 	}
 
 	_createClass(Project, [{
+		key: 'shouldComponentUpdate',
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props || next !== this.state;
+		}
+	}, {
 		key: 'clickExpand',
 		value: function clickExpand() {
 			console.log('projectName: ', this.props.project.name);
@@ -608,6 +628,11 @@ var ProjectDescription = function (_Component) {
 	}
 
 	_createClass(ProjectDescription, [{
+		key: "shouldComponentUpdate",
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props;
+		}
+	}, {
 		key: "render",
 		value: function render() {
 			return _react2.default.createElement(
@@ -691,6 +716,11 @@ var ProjectHeader = function (_Component) {
 	}
 
 	_createClass(ProjectHeader, [{
+		key: 'shouldComponentUpdate',
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props;
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var spanClasses = 'glyphicon ' + (this.props.visible ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down');
@@ -759,6 +789,11 @@ var ProjectList = function (_Component) {
 	}
 
 	_createClass(ProjectList, [{
+		key: 'shouldComponentUpdate',
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props;
+		}
+	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
@@ -827,6 +862,11 @@ var ProjectReadme = function (_Component) {
 	}
 
 	_createClass(ProjectReadme, [{
+		key: 'shouldComponentUpdate',
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props;
+		}
+	}, {
 		key: 'createMarkup',
 		value: function createMarkup() {
 			var markdownContent = atob(this.props.readmeContent);
@@ -899,6 +939,11 @@ var InputFilter = function (_Component) {
 	}
 
 	_createClass(InputFilter, [{
+		key: "shouldComponentUpdate",
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props;
+		}
+	}, {
 		key: "render",
 		value: function render() {
 			return _react2.default.createElement(
@@ -984,6 +1029,11 @@ var GithubApp = function (_Component) {
 
 			dispatch((0, _profileActions.fetchProfileIfNeeded)(this.props.profileName));
 			dispatch((0, _projectsActions.fetchProjectsIfNeeded)(this.props.profileName));
+		}
+	}, {
+		key: 'shouldComponentUpdate',
+		value: function shouldComponentUpdate(nextProps, nextState) {
+			return nextProps !== this.props || next !== this.state;
 		}
 	}, {
 		key: 'componentWillReceiveProps',

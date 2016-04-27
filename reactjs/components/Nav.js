@@ -3,6 +3,10 @@ import InputFilter from './inputFilter';
 
 export default class Nav extends Component {
 
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextProps !== this.props;
+	}
+
 	onClickElement(evt) {
 		const language = evt.target.getAttribute('data-language');
 		this.props.filterLanguageFunction(language);

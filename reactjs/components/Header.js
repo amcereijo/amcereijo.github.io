@@ -1,6 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 
 export default class Header extends Component {
+
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextProps !== this.props;
+	}
+
 	render() {
 		console.log('Header render this.props: ', this.props);
 		console.log('Header render this.props.email: ', this.props.email);

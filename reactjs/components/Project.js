@@ -9,6 +9,10 @@ export default class Project extends Component {
 		this.state = { expanded: false };
 	}
 
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextProps !== this.props || next !== this.state;
+	}
+
 	clickExpand() {
 		console.log('projectName: ', this.props.project.name);
 		this.setState({expanded: !this.state.expanded});

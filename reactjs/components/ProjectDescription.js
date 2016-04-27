@@ -1,6 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 
 export default class ProjectDescription extends Component {
+
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextProps !== this.props;
+	}
+
 	render() {
 		return (
 			<div className="panel-body">

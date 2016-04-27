@@ -2,6 +2,10 @@ import React, { Component, PropTypes } from 'react';
 
 export default class ProjectHeader extends Component {
 
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextProps !== this.props;
+	}
+
 	render() {
 		const spanClasses = `glyphicon ${this.props.visible ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down'}`;
 		return (

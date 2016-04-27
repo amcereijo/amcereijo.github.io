@@ -23,6 +23,10 @@ class GithubApp extends Component {
 		dispatch(fetchProjectsIfNeeded(this.props.profileName));
 	}
 
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextProps !== this.props || next !== this.state;
+	}
+
 	componentWillReceiveProps(nextProps) {
 		if(nextProps.profileName !== this.props.profileName) {
 			const { dispatch, profileName } = nextProps;

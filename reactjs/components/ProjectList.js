@@ -2,6 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import Project from './Project';
 
 export default class ProjectList extends Component {
+
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextProps !== this.props;
+	}
+
 	render() {
 		const readme = this.props.readme || {};
 		console.log('ProjectList - this.props.projects: ', this.props.projects);

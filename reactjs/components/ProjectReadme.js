@@ -2,6 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import marked from 'marked';
 
 export default class ProjectReadme extends Component {
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextProps !== this.props;
+	}
+
 	createMarkup() {
 		const markdownContent = atob(this.props.readmeContent);
 		return {__html: marked(markdownContent)};
