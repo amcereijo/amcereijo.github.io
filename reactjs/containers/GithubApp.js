@@ -2,8 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import { fetchProfileIfNeeded } from '../actions/profileActions';
-import { fetchProjectsIfNeeded, filterFunction } from '../actions/projectsActions';
-import { fetchReadmeIfNeeded } from '../actions/readmeActions';
+import { fetchProjectsIfNeeded } from '../actions/projectsActions';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -14,7 +13,6 @@ class GithubApp extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = { selectedLanguage: 'All' };
 	}
 
 	componentDidMount() {
@@ -24,7 +22,7 @@ class GithubApp extends Component {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		return nextProps !== this.props || next !== this.state;
+		return nextProps !== this.props || nextState !== this.state;
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -35,49 +33,9 @@ class GithubApp extends Component {
 		}
 	}
 
-	clickExpandCollapsProject(projectName) {
-		const { dispatch } = this.props;
-		dispatch(fetchReadmeIfNeeded(this.props.profileName, projectName));
-	}
-
-
-	filterFuntionLanguage(language) {
-		const { dispatch } = this.props;
-		this.setState({ selectedLanguage: language || 'All' });
-
-		console.log('selected language to filter: ', language);
-
-		dispatch(filterFunction('languageFilter', (actualProject) => {
-			const actualProjectLanguaje = (actualProject && actualProject.language && actualProject.language.toLowerCase()) || 'Other' ;
-			return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
-		}, true));
-	}
-
-	filterFunctionEvent(evt) {
-		const { dispatch } = this.props;
-		const hasEvent = () => evt && evt.target && evt.keyCode;
-		const isValidKey = () => (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode))) ||
-			[8,46,32].indexOf(evt.keyCode) >= 0;
-
-		if(hasEvent() && isValidKey()) {
-			const filterValue = evt.target.value;
-			console.log('Event:', filterValue);
-
-			dispatch(filterFunction('inputFilter', (actualProject) => {
-				console.log('actualProject: ', actualProject);
-				return (actualProject.name && actualProject.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0);
-			}, evt.target.value ? true : false));
-		}
-	}
-
 	render() {
 		const {dispatch, profileName, data, isFetching,
 			lastUpdated, projects, languages, readme} = this.props;
-
-		console.log('=> state.selectedLanguage: ', this.state.selectedLanguage);
-
-		this.filterFunctionEvent = this.filterFunctionEvent.bind(this);
-		this.filterFuntionLanguage = this.filterFuntionLanguage.bind(this);
 
 		console.log('Render languages: ', languages);
 		console.log('Render data: ', data);
@@ -90,14 +48,14 @@ class GithubApp extends Component {
 				  html_url = {data.html_url || ''}
 				  email = {data.email || ''}
 				  location = {data.location || ''} />
-				<Nav languages = {languages}
-					filterFunction = {this.filterFunctionEvent}
-					filterLanguageFunction = {this.filterFuntionLanguage}
-					selectedLanguage = {this.state.selectedLanguage}/>
-				<ProjectList projects={projects} readme={readme} onExpandCollapsProject={this.clickExpandCollapsProject.bind(this)}/>
+				<Nav languages = {languages}/>
+				<ProjectList profileName={this.props.profileName} projects={projects} readme={readme} />
 				<Footer />
 			</div>
 		);
+
+		/*filterLanguageFunction = {this.filterFuntionLanguage}
+					selectedLanguage = {this.state.selectedLanguage}*/
 	}
 }
 
@@ -112,7 +70,7 @@ GithubApp.propTypes = {
 
 
 function mapStateToProps(state) {
-	const { profileForName, projectsForName, readmeForProject, selectedLanguage } = state;
+	const { profileForName, projectsForName, readmeForProject, /*selectedLanguage*/ } = state;
 	console.log('====> profileForName: ', profileForName);
 	const {
 		isFetching,

@@ -12,6 +12,7 @@ export default class ProjectList extends Component {
 		console.log('ProjectList - this.props.projects: ', this.props.projects);
 		const projects = this.props.projects || [];
 		console.log('ProjectList - readme: ', readme);
+		const profileName = this.props.profileName;
 		return (
 			<main id="main" className="container">
 			{projects.map((project, i) =>
@@ -19,7 +20,7 @@ export default class ProjectList extends Component {
 				<Project key={i}
 					project={project}
 					readmeContent={readme[project.name] || {}}
-					onExpandCollapsProject={this.props.onExpandCollapsProject}/>
+					profileName={profileName}/>
 			)}
 			</main>
 		);
@@ -31,6 +32,5 @@ ProjectList.propTypes = {
 			PropTypes.object.isRequired
 		).isRequired,
   readme: PropTypes.object.isRequired,
-  onExpandCollapsProject: PropTypes.func.isRequired,
+  profileName: PropTypes.string.isRequired,
 };
-

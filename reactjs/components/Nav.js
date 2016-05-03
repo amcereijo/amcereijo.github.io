@@ -1,7 +1,14 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import InputFilter from './inputFilter';
+import { filterFunction } from '../actions/projectsActions';
 
-export default class Nav extends Component {
+class Nav extends Component {
+
+	constructor(props) {
+		super(props);
+		this.state = { selectedLanguage: 'All' };
+	}
 
 	shouldComponentUpdate(nextProps, nextState) {
 		return nextProps !== this.props;
@@ -9,17 +16,27 @@ export default class Nav extends Component {
 
 	onClickElement(evt) {
 		const language = evt.target.getAttribute('data-language');
-		this.props.filterLanguageFunction(language);
+		const { dispatch } = this.props;
+
+		this.setState({ selectedLanguage: language || 'All' });
+
+		console.log('selected language to filter: ', language);
+
+		dispatch(filterFunction('languageFilter', (actualProject) => {
+			const actualProjectLanguaje = (actualProject && actualProject.language && actualProject.language.toLowerCase()) || 'Other' ;
+			return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
+		}, true));
+
 	}
 
 	render() {
+		const { dispatch } = this.props;
+
 		const disbleButtonClass = 'languageBtn btn btn-default disabled';
 		const buttonClass = 'languageBtn btn btn-default';
 		const languages = this.props.languages || [];
 
-		//const onClickFunction = this.props.filterLanguageFunction;
-
-		console.log(' => NAV -> selectedLanguage: ', this.props.selectedLanguage);
+		console.log(' => NAV -> selectedLanguage: ', this.state.selectedLanguage);
 		return (
 		<nav className="container">
 			<p className="text-left">
@@ -48,7 +65,7 @@ Nav.propTypes = {
   languages: PropTypes.arrayOf(
 			PropTypes.object.isRequired
 		).isRequired,
-  filterFunction: PropTypes.func.isRequired,
-  filterLanguageFunction: PropTypes.func.isRequired,
-  selectedLanguage: PropTypes.string.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
+
+export default connect()(Nav);
