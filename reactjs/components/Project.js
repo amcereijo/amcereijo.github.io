@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import ProjectHeader from './ProjectHeader';
 import ProjectDescription from './ProjectDescription';
 import ProjectReadme from './ProjectReadme';
 import { fetchReadmeIfNeeded } from '../actions/readmeActions';
-import { connect } from 'react-redux';
 
 class Project extends Component {
 	constructor(props){
@@ -12,25 +12,24 @@ class Project extends Component {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		return true;
-		// return this.props.project.isVisible !== nextProps.isVisible || nextState !== this.state;
-		// return nextProps !== this.props || nextState !== this.state;
+		return nextProps !== this.props || nextState !== this.state;
 	}
 
 	clickExpand() {
 		console.log('projectName: ', this.props.project.name);
-		this.setState({expanded: !this.state.expanded});
-		const { dispatch, profileName, project } = this.props;
-		dispatch(fetchReadmeIfNeeded(profileName, project.name));
+		this.setState({expanded: !this.state.expanded}, () => {
+			const { dispatch } = this.props;
+			dispatch(fetchReadmeIfNeeded(this.props.profileName, this.props.project.name));
+		});
 	}
 
 	render() {
-		const classNames = 'panel panel-default panelProject' + (this.props.project.isVisible === false? ' hidden':'');
+		const classNames = 'panel panel-default panelProject';
 		return (
 			 <div className={classNames} data-projectname={this.props.project.name}>
 				<ProjectHeader visible={this.state.expanded} project={this.props.project} clickExpand={this.clickExpand.bind(this)} />
 				<ProjectDescription project={this.props.project} />
-				<ProjectReadme visible={this.state.expanded && this.props.project.isVisible}
+				<ProjectReadme visible={this.state.expanded}
 					readmeContent={this.props.readmeContent.readme && this.props.readmeContent.readme.content || ''} />
 			</div>
 		);

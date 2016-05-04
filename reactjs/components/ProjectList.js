@@ -8,19 +8,20 @@ export default class ProjectList extends Component {
 	}
 
 	render() {
-		const readme = this.props.readme || {};
+		const {readme = {}, projects = [], profileName} = this.props;
 		console.log('ProjectList - this.props.projects: ', this.props.projects);
-		const projects = this.props.projects || [];
 		console.log('ProjectList - readme: ', readme);
-		const profileName = this.props.profileName;
+
+		const createProject = (key, project) => {
+			return <Project key={key}
+				 		project={project}
+				 		readmeContent={readme[project.name] || {}}
+				 		profileName={profileName}/>
+		}
 		return (
 			<main id="main" className="container">
 			{projects.map((project, i) =>
-
-				<Project key={i}
-					project={project}
-					readmeContent={readme[project.name] || {}}
-					profileName={profileName}/>
+				(project.isVisible) ? createProject(i, project) : ''
 			)}
 			</main>
 		);

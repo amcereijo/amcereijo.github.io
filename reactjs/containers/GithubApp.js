@@ -49,13 +49,10 @@ class GithubApp extends Component {
 				  email = {data.email || ''}
 				  location = {data.location || ''} />
 				<Nav languages = {languages}/>
-				<ProjectList profileName={this.props.profileName} projects={projects} readme={readme} />
+				<ProjectList profileName={profileName} projects={projects} readme={readme}/>
 				<Footer />
 			</div>
 		);
-
-		/*filterLanguageFunction = {this.filterFuntionLanguage}
-					selectedLanguage = {this.state.selectedLanguage}*/
 	}
 }
 

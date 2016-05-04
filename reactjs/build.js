@@ -539,6 +539,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = require('react-redux');
+
 var _ProjectHeader = require('./ProjectHeader');
 
 var _ProjectHeader2 = _interopRequireDefault(_ProjectHeader);
@@ -552,8 +554,6 @@ var _ProjectReadme = require('./ProjectReadme');
 var _ProjectReadme2 = _interopRequireDefault(_ProjectReadme);
 
 var _readmeActions = require('../actions/readmeActions');
-
-var _reactRedux = require('react-redux');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -578,32 +578,30 @@ var Project = function (_Component) {
 	_createClass(Project, [{
 		key: 'shouldComponentUpdate',
 		value: function shouldComponentUpdate(nextProps, nextState) {
-			return true;
-			// return this.props.project.isVisible !== nextProps.isVisible || nextState !== this.state;
-			// return nextProps !== this.props || nextState !== this.state;
+			return nextProps !== this.props || nextState !== this.state;
 		}
 	}, {
 		key: 'clickExpand',
 		value: function clickExpand() {
-			console.log('projectName: ', this.props.project.name);
-			this.setState({ expanded: !this.state.expanded });
-			var _props = this.props;
-			var dispatch = _props.dispatch;
-			var profileName = _props.profileName;
-			var project = _props.project;
+			var _this2 = this;
 
-			dispatch((0, _readmeActions.fetchReadmeIfNeeded)(profileName, project.name));
+			console.log('projectName: ', this.props.project.name);
+			this.setState({ expanded: !this.state.expanded }, function () {
+				var dispatch = _this2.props.dispatch;
+
+				dispatch((0, _readmeActions.fetchReadmeIfNeeded)(_this2.props.profileName, _this2.props.project.name));
+			});
 		}
 	}, {
 		key: 'render',
 		value: function render() {
-			var classNames = 'panel panel-default panelProject' + (this.props.project.isVisible === false ? ' hidden' : '');
+			var classNames = 'panel panel-default panelProject';
 			return _react2.default.createElement(
 				'div',
 				{ className: classNames, 'data-projectname': this.props.project.name },
 				_react2.default.createElement(_ProjectHeader2.default, { visible: this.state.expanded, project: this.props.project, clickExpand: this.clickExpand.bind(this) }),
 				_react2.default.createElement(_ProjectDescription2.default, { project: this.props.project }),
-				_react2.default.createElement(_ProjectReadme2.default, { visible: this.state.expanded && this.props.project.isVisible,
+				_react2.default.createElement(_ProjectReadme2.default, { visible: this.state.expanded,
 					readmeContent: this.props.readmeContent.readme && this.props.readmeContent.readme.content || '' })
 			);
 		}
@@ -822,19 +820,27 @@ var ProjectList = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var readme = this.props.readme || {};
+			var _props = this.props;
+			var _props$readme = _props.readme;
+			var readme = _props$readme === undefined ? {} : _props$readme;
+			var _props$projects = _props.projects;
+			var projects = _props$projects === undefined ? [] : _props$projects;
+			var profileName = _props.profileName;
+
 			console.log('ProjectList - this.props.projects: ', this.props.projects);
-			var projects = this.props.projects || [];
 			console.log('ProjectList - readme: ', readme);
-			var profileName = this.props.profileName;
+
+			var createProject = function createProject(key, project) {
+				return _react2.default.createElement(_Project2.default, { key: key,
+					project: project,
+					readmeContent: readme[project.name] || {},
+					profileName: profileName });
+			};
 			return _react2.default.createElement(
 				'main',
 				{ id: 'main', className: 'container' },
 				projects.map(function (project, i) {
-					return _react2.default.createElement(_Project2.default, { key: i,
-						project: project,
-						readmeContent: readme[project.name] || {},
-						profileName: profileName });
+					return project.isVisible ? createProject(i, project) : '';
 				})
 			);
 		}
@@ -1121,12 +1127,9 @@ var GithubApp = function (_Component) {
 					email: data.email || '',
 					location: data.location || '' }),
 				_react2.default.createElement(_Nav2.default, { languages: languages }),
-				_react2.default.createElement(_ProjectList2.default, { profileName: this.props.profileName, projects: projects, readme: readme }),
+				_react2.default.createElement(_ProjectList2.default, { profileName: profileName, projects: projects, readme: readme }),
 				_react2.default.createElement(_Footer2.default, null)
 			);
-
-			/*filterLanguageFunction = {this.filterFuntionLanguage}
-   			selectedLanguage = {this.state.selectedLanguage}*/
 		}
 	}]);
 
@@ -23566,19 +23569,27 @@ function _mapDates(projects) {
 }
 
 function _filterProjects(filterFunctions, projects) {
+	var filtered = false;
+
 	var _loop = function _loop(key) {
-		console.log();
 		if (filterFunctions.hasOwnProperty(key) && typeof filterFunctions[key] === 'function') {
 			projects = projects.map(function (project) {
 				var result = filterFunctions[key](project);
 				project.isVisible = result;
 				return project;
 			});
+			filtered = true;
 		}
 	};
 
 	for (var key in filterFunctions) {
 		_loop(key);
+	}
+	if (!filtered) {
+		projects = projects.map(function (project) {
+			project.isVisible = true;
+			return project;
+		});
 	}
 	return projects;
 }
