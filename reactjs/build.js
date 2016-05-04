@@ -421,9 +421,13 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = require('react-redux');
+
 var _inputFilter = require('./inputFilter');
 
 var _inputFilter2 = _interopRequireDefault(_inputFilter);
+
+var _projectsActions = require('../actions/projectsActions');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -436,10 +440,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Nav = function (_Component) {
 	_inherits(Nav, _Component);
 
-	function Nav() {
+	function Nav(props) {
 		_classCallCheck(this, Nav);
 
-		return _possibleConstructorReturn(this, Object.getPrototypeOf(Nav).apply(this, arguments));
+		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Nav).call(this, props));
+
+		_this.state = { selectedLanguage: 'All' };
+		return _this;
 	}
 
 	_createClass(Nav, [{
@@ -451,20 +458,31 @@ var Nav = function (_Component) {
 		key: 'onClickElement',
 		value: function onClickElement(evt) {
 			var language = evt.target.getAttribute('data-language');
-			this.props.filterLanguageFunction(language);
+			var dispatch = this.props.dispatch;
+
+
+			this.setState({ selectedLanguage: language || 'All' });
+
+			console.log('selected language to filter: ', language);
+
+			dispatch((0, _projectsActions.filterFunction)('languageFilter', function (actualProject) {
+				var actualProjectLanguaje = actualProject && actualProject.language && actualProject.language.toLowerCase() || 'Other';
+				return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
+			}, true));
 		}
 	}, {
 		key: 'render',
 		value: function render() {
 			var _this2 = this;
 
+			var dispatch = this.props.dispatch;
+
+
 			var disbleButtonClass = 'languageBtn btn btn-default disabled';
 			var buttonClass = 'languageBtn btn btn-default';
 			var languages = this.props.languages || [];
 
-			//const onClickFunction = this.props.filterLanguageFunction;
-
-			console.log(' => NAV -> selectedLanguage: ', this.props.selectedLanguage);
+			console.log(' => NAV -> selectedLanguage: ', this.state.selectedLanguage);
 			return _react2.default.createElement(
 				'nav',
 				{ className: 'container' },
@@ -501,17 +519,14 @@ var Nav = function (_Component) {
 	return Nav;
 }(_react.Component);
 
-exports.default = Nav;
-
-
 Nav.propTypes = {
 	languages: _react.PropTypes.arrayOf(_react.PropTypes.object.isRequired).isRequired,
-	filterFunction: _react.PropTypes.func.isRequired,
-	filterLanguageFunction: _react.PropTypes.func.isRequired,
-	selectedLanguage: _react.PropTypes.string.isRequired
+	dispatch: _react.PropTypes.func.isRequired
 };
 
-},{"./inputFilter":12,"react":187}],7:[function(require,module,exports){
+exports.default = (0, _reactRedux.connect)()(Nav);
+
+},{"../actions/projectsActions":2,"./inputFilter":12,"react":187,"react-redux":23}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -524,6 +539,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRedux = require('react-redux');
+
 var _ProjectHeader = require('./ProjectHeader');
 
 var _ProjectHeader2 = _interopRequireDefault(_ProjectHeader);
@@ -535,6 +552,8 @@ var _ProjectDescription2 = _interopRequireDefault(_ProjectDescription);
 var _ProjectReadme = require('./ProjectReadme');
 
 var _ProjectReadme2 = _interopRequireDefault(_ProjectReadme);
+
+var _readmeActions = require('../actions/readmeActions');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -559,19 +578,24 @@ var Project = function (_Component) {
 	_createClass(Project, [{
 		key: 'shouldComponentUpdate',
 		value: function shouldComponentUpdate(nextProps, nextState) {
-			return nextProps !== this.props || next !== this.state;
+			return nextProps !== this.props || nextState !== this.state;
 		}
 	}, {
 		key: 'clickExpand',
 		value: function clickExpand() {
+			var _this2 = this;
+
 			console.log('projectName: ', this.props.project.name);
-			this.setState({ expanded: !this.state.expanded });
-			this.props.onExpandCollapsProject(this.props.project.name);
+			this.setState({ expanded: !this.state.expanded }, function () {
+				var dispatch = _this2.props.dispatch;
+
+				dispatch((0, _readmeActions.fetchReadmeIfNeeded)(_this2.props.profileName, _this2.props.project.name));
+			});
 		}
 	}, {
 		key: 'render',
 		value: function render() {
-			var classNames = 'panel panel-default panelProject' + (this.props.project.isVisible === false ? ' hidden' : '');
+			var classNames = 'panel panel-default panelProject';
 			return _react2.default.createElement(
 				'div',
 				{ className: classNames, 'data-projectname': this.props.project.name },
@@ -586,18 +610,18 @@ var Project = function (_Component) {
 	return Project;
 }(_react.Component);
 
-exports.default = Project;
-
-
 Project.propTypes = {
 	project: _react.PropTypes.object.isRequired,
 	readmeContent: _react.PropTypes.object,
-	onExpandCollapsProject: _react.PropTypes.func.isRequired
+	profileName: _react.PropTypes.string.isRequired,
+	dispatch: _react.PropTypes.func.isRequired
 };
 
 Project.defaultProps = { readmeContent: 'README' };
 
-},{"./ProjectDescription":8,"./ProjectHeader":9,"./ProjectReadme":11,"react":187}],8:[function(require,module,exports){
+exports.default = (0, _reactRedux.connect)()(Project);
+
+},{"../actions/readmeActions":3,"./ProjectDescription":8,"./ProjectHeader":9,"./ProjectReadme":11,"react":187,"react-redux":23}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -723,7 +747,7 @@ var ProjectHeader = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var spanClasses = 'glyphicon ' + (this.props.visible ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down');
+			var spanClasses = 'glyphicon ' + (this.props.visible && this.props.project.isVisible !== false ? 'glyphicon-chevron-up' : 'glyphicon-chevron-down');
 			return _react2.default.createElement(
 				'div',
 				{ className: 'panel-heading project-name', style: { backgroundColor: this.props.project.languageColor } },
@@ -796,20 +820,27 @@ var ProjectList = function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this2 = this;
+			var _props = this.props;
+			var _props$readme = _props.readme;
+			var readme = _props$readme === undefined ? {} : _props$readme;
+			var _props$projects = _props.projects;
+			var projects = _props$projects === undefined ? [] : _props$projects;
+			var profileName = _props.profileName;
 
-			var readme = this.props.readme || {};
 			console.log('ProjectList - this.props.projects: ', this.props.projects);
-			var projects = this.props.projects || [];
 			console.log('ProjectList - readme: ', readme);
+
+			var createProject = function createProject(key, project) {
+				return _react2.default.createElement(_Project2.default, { key: key,
+					project: project,
+					readmeContent: readme[project.name] || {},
+					profileName: profileName });
+			};
 			return _react2.default.createElement(
 				'main',
 				{ id: 'main', className: 'container' },
 				projects.map(function (project, i) {
-					return _react2.default.createElement(_Project2.default, { key: i,
-						project: project,
-						readmeContent: readme[project.name] || {},
-						onExpandCollapsProject: _this2.props.onExpandCollapsProject });
+					return project.isVisible ? createProject(i, project) : '';
 				})
 			);
 		}
@@ -824,7 +855,7 @@ exports.default = ProjectList;
 ProjectList.propTypes = {
 	projects: _react.PropTypes.arrayOf(_react.PropTypes.object.isRequired).isRequired,
 	readme: _react.PropTypes.object.isRequired,
-	onExpandCollapsProject: _react.PropTypes.func.isRequired
+	profileName: _react.PropTypes.string.isRequired
 };
 
 },{"./Project":7,"react":187}],11:[function(require,module,exports){
@@ -909,7 +940,7 @@ ProjectReadme.propTypes = {
 };
 
 },{"marked":19,"react":187}],12:[function(require,module,exports){
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -917,9 +948,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _projectsActions = require('../actions/projectsActions');
+
+var _reactRedux = require('react-redux');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -939,18 +974,43 @@ var InputFilter = function (_Component) {
 	}
 
 	_createClass(InputFilter, [{
-		key: "shouldComponentUpdate",
+		key: 'shouldComponentUpdate',
 		value: function shouldComponentUpdate(nextProps, nextState) {
 			return nextProps !== this.props;
 		}
 	}, {
-		key: "render",
+		key: 'filterFunctionEvent',
+		value: function filterFunctionEvent(evt) {
+			var dispatch = this.props.dispatch;
+
+			var hasEvent = function hasEvent() {
+				return evt && evt.target && evt.keyCode;
+			};
+			var isValidKey = function isValidKey() {
+				return (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode)) || [8, 46, 32].indexOf(evt.keyCode) >= 0
+				);
+			};
+
+			if (hasEvent() && isValidKey()) {
+				(function () {
+					var filterValue = evt.target.value;
+					console.log('Event: "' + filterValue + '"');
+
+					dispatch((0, _projectsActions.filterFunction)('inputFilter', function (actualProject) {
+						console.log('actualProject: ', actualProject);
+						return actualProject.name && actualProject.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0;
+					}, true));
+				})();
+			}
+		}
+	}, {
+		key: 'render',
 		value: function render() {
 			return _react2.default.createElement(
-				"p",
-				{ className: "text-left" },
-				_react2.default.createElement("input", { onKeyUp: this.props.filterFunction.bind(this),
-					type: "text", className: "form-control searchRepos", placeholder: "Search" })
+				'p',
+				{ className: 'text-left' },
+				_react2.default.createElement('input', { onKeyUp: this.filterFunctionEvent.bind(this),
+					type: 'text', className: 'form-control searchRepos', placeholder: 'Search' })
 			);
 		}
 	}]);
@@ -958,14 +1018,13 @@ var InputFilter = function (_Component) {
 	return InputFilter;
 }(_react.Component);
 
-exports.default = InputFilter;
-
-
 InputFilter.propTypes = {
-	filterFunction: _react.PropTypes.func.isRequired
+	dispatch: _react.PropTypes.func.isRequired
 };
 
-},{"react":187}],13:[function(require,module,exports){
+exports.default = (0, _reactRedux.connect)()(InputFilter);
+
+},{"../actions/projectsActions":2,"react":187,"react-redux":23}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -983,8 +1042,6 @@ var _reactRedux = require('react-redux');
 var _profileActions = require('../actions/profileActions');
 
 var _projectsActions = require('../actions/projectsActions');
-
-var _readmeActions = require('../actions/readmeActions');
 
 var _Header = require('../components/Header');
 
@@ -1016,10 +1073,7 @@ var GithubApp = function (_Component) {
 	function GithubApp(props) {
 		_classCallCheck(this, GithubApp);
 
-		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(GithubApp).call(this, props));
-
-		_this.state = { selectedLanguage: 'All' };
-		return _this;
+		return _possibleConstructorReturn(this, Object.getPrototypeOf(GithubApp).call(this, props));
 	}
 
 	_createClass(GithubApp, [{
@@ -1033,7 +1087,7 @@ var GithubApp = function (_Component) {
 	}, {
 		key: 'shouldComponentUpdate',
 		value: function shouldComponentUpdate(nextProps, nextState) {
-			return nextProps !== this.props || next !== this.state;
+			return nextProps !== this.props || nextState !== this.state;
 		}
 	}, {
 		key: 'componentWillReceiveProps',
@@ -1044,52 +1098,6 @@ var GithubApp = function (_Component) {
 
 				dispatch((0, _profileActions.fetchProfileIfNeeded)(profileName));
 				dispatch((0, _projectsActions.fetchProjectsIfNeeded)(this.props.profileName));
-			}
-		}
-	}, {
-		key: 'clickExpandCollapsProject',
-		value: function clickExpandCollapsProject(projectName) {
-			var dispatch = this.props.dispatch;
-
-			dispatch((0, _readmeActions.fetchReadmeIfNeeded)(this.props.profileName, projectName));
-		}
-	}, {
-		key: 'filterFuntionLanguage',
-		value: function filterFuntionLanguage(language) {
-			var dispatch = this.props.dispatch;
-
-			this.setState({ selectedLanguage: language || 'All' });
-
-			console.log('selected language to filter: ', language);
-
-			dispatch((0, _projectsActions.filterFunction)('languageFilter', function (actualProject) {
-				var actualProjectLanguaje = actualProject && actualProject.language && actualProject.language.toLowerCase() || 'Other';
-				return language === '' || actualProjectLanguaje.toLowerCase() === language.toLowerCase();
-			}, true));
-		}
-	}, {
-		key: 'filterFunctionEvent',
-		value: function filterFunctionEvent(evt) {
-			var dispatch = this.props.dispatch;
-
-			var hasEvent = function hasEvent() {
-				return evt && evt.target && evt.keyCode;
-			};
-			var isValidKey = function isValidKey() {
-				return (/[a-zA-Z0-9-_ ]/.test(String.fromCharCode(evt.keyCode)) || [8, 46, 32].indexOf(evt.keyCode) >= 0
-				);
-			};
-
-			if (hasEvent() && isValidKey()) {
-				(function () {
-					var filterValue = evt.target.value;
-					console.log('Event:', filterValue);
-
-					dispatch((0, _projectsActions.filterFunction)('inputFilter', function (actualProject) {
-						console.log('actualProject: ', actualProject);
-						return actualProject.name && actualProject.name.toLowerCase().indexOf(filterValue.toLowerCase()) >= 0;
-					}, evt.target.value ? true : false));
-				})();
 			}
 		}
 	}, {
@@ -1106,11 +1114,6 @@ var GithubApp = function (_Component) {
 			var readme = _props.readme;
 
 
-			console.log('=> state.selectedLanguage: ', this.state.selectedLanguage);
-
-			this.filterFunctionEvent = this.filterFunctionEvent.bind(this);
-			this.filterFuntionLanguage = this.filterFuntionLanguage.bind(this);
-
 			console.log('Render languages: ', languages);
 			console.log('Render data: ', data);
 
@@ -1123,11 +1126,8 @@ var GithubApp = function (_Component) {
 					html_url: data.html_url || '',
 					email: data.email || '',
 					location: data.location || '' }),
-				_react2.default.createElement(_Nav2.default, { languages: languages,
-					filterFunction: this.filterFunctionEvent,
-					filterLanguageFunction: this.filterFuntionLanguage,
-					selectedLanguage: this.state.selectedLanguage }),
-				_react2.default.createElement(_ProjectList2.default, { projects: projects, readme: readme, onExpandCollapsProject: this.clickExpandCollapsProject.bind(this) }),
+				_react2.default.createElement(_Nav2.default, { languages: languages }),
+				_react2.default.createElement(_ProjectList2.default, { profileName: profileName, projects: projects, readme: readme }),
 				_react2.default.createElement(_Footer2.default, null)
 			);
 		}
@@ -1145,10 +1145,9 @@ GithubApp.propTypes = {
 };
 
 function mapStateToProps(state) {
-	var profileForName = state.profileForName;
+	var profileForName = /*selectedLanguage*/state.profileForName;
 	var projectsForName = state.projectsForName;
 	var readmeForProject = state.readmeForProject;
-	var selectedLanguage = state.selectedLanguage;
 
 	console.log('====> profileForName: ', profileForName);
 
@@ -1193,7 +1192,7 @@ function mapStateToProps(state) {
 
 exports.default = (0, _reactRedux.connect)(mapStateToProps)(GithubApp);
 
-},{"../actions/profileActions":1,"../actions/projectsActions":2,"../actions/readmeActions":3,"../components/Footer":4,"../components/Header":5,"../components/Nav":6,"../components/ProjectList":10,"react":187,"react-redux":23}],14:[function(require,module,exports){
+},{"../actions/profileActions":1,"../actions/projectsActions":2,"../components/Footer":4,"../components/Header":5,"../components/Nav":6,"../components/ProjectList":10,"react":187,"react-redux":23}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23570,19 +23569,27 @@ function _mapDates(projects) {
 }
 
 function _filterProjects(filterFunctions, projects) {
+	var filtered = false;
+
 	var _loop = function _loop(key) {
-		console.log();
 		if (filterFunctions.hasOwnProperty(key) && typeof filterFunctions[key] === 'function') {
 			projects = projects.map(function (project) {
 				var result = filterFunctions[key](project);
 				project.isVisible = result;
 				return project;
 			});
+			filtered = true;
 		}
 	};
 
 	for (var key in filterFunctions) {
 		_loop(key);
+	}
+	if (!filtered) {
+		projects = projects.map(function (project) {
+			project.isVisible = true;
+			return project;
+		});
 	}
 	return projects;
 }

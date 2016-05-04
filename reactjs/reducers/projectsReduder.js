@@ -49,15 +49,22 @@ function _mapDates(projects) {
 }
 
 function _filterProjects(filterFunctions, projects){
+	let filtered = false;
 	for(const key in filterFunctions) {
-		console.log()
 		if(filterFunctions.hasOwnProperty(key) && typeof filterFunctions[key] === 'function') {
 			projects = projects.map((project) => {
 				const result = filterFunctions[key](project);
 				project.isVisible = result;
 				return project;
 			});
+			filtered = true;
 		}
+	}
+	if(!filtered) {
+		projects = projects.map((project) => {
+			project.isVisible = true;
+			return project;
+		});
 	}
 	return projects;
 }

@@ -1,0 +1,9 @@
+{
+  "name": "polymer-test",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "4.8.x",
+    "cors": "2.4.1"
+  }
+}
